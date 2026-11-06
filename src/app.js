@@ -31,7 +31,7 @@ function render(){
  const visible=selectEpisodes(items,filter,purchased);
  $('.chips').innerHTML=filters.map(f=>`<button data-filter="${f}" aria-pressed="${f===filter}">${f}</button>`).join('');
  $('#count').textContent=`Показано ${visible.length} из ${items.length} · Доступно ${items.filter(e=>available(e,purchased)).length}`;
- $('#om-screen').innerHTML=visible.length?`<div class="constellation" aria-label="Дерево эфиров"><svg class="constellation-links" aria-hidden="true"></svg>${visible.map(e=>{const open=available(e,purchased),status=e.is_free?'Бесплатный':open?'Куплен · демо':(embedded?'Проверить доступ':'Не куплен');return `<a class="orbit-node ${open?'purchased':'locked'}" data-order="${e.order}" style="--topic:${colors[(e.order-1)%colors.length]}" href="${escape(destination(e,purchased))}" target="_blank" rel="noopener noreferrer" aria-label="${escape(e.title)} — ${status}" title="${escape(e.description)}"><span class="orbit-disc"><i data-lucide="${symbols[(e.order-1)%symbols.length]}" aria-hidden="true"></i>${open?'<span class="owned-mark" aria-hidden="true">✓</span>':''}</span><span class="orbit-title">${escape(e.title)}</span><span class="episode-status">${status}</span></a>`;}).join('')}</div>`:'<p class="empty">Здесь пока нет эфиров. Выберите другой фильтр или тестовый сценарий.</p>';
+ $('#om-screen').innerHTML=visible.length?`<div class="constellation" aria-label="Дерево эфиров"><svg class="constellation-links" aria-hidden="true"></svg>${visible.map(e=>{const open=available(e,purchased),status=e.is_free?'Бесплатный':open?'Куплен · демо':(embedded?'Проверить доступ':'Не куплен');return `<a class="orbit-node ${open?'purchased':'locked'}" data-order="${e.order}" style="--topic:${colors[(e.order-1)%colors.length]}" href="${escape(destination(e,purchased,embedded))}" aria-label="${escape(e.title)} — ${status}" title="${escape(e.description)}"><span class="orbit-disc"><i data-lucide="${symbols[(e.order-1)%symbols.length]}" aria-hidden="true"></i>${open?'<span class="owned-mark" aria-hidden="true">✓</span>':''}</span><span class="orbit-title">${escape(e.title)}</span><span class="episode-status">${status}</span></a>`;}).join('')}</div>`:'<p class="empty">Здесь пока нет эфиров. Выберите другой фильтр или тестовый сценарий.</p>';
  globalThis.lucide?.createIcons();
  schedule();
 }
@@ -49,6 +49,7 @@ $('#om-screen').addEventListener('click',event=>{
  const link=event.target.closest('a.orbit-node');
  if(!link||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;
  event.preventDefault();
+ if(embedded&&!bridge?.getState().connected){$('#integration-status').textContent='Дождитесь подключения к Notibot и нажмите ещё раз.';return;}
  try{if(bridge){bridge.openLink(link.getAttribute('href'));}else{window.location.assign(link.href);}}catch(error){$('#integration-status').textContent='Не удалось открыть эфир. Попробуйте ещё раз.';}
 });
 new ResizeObserver(schedule).observe($('#om-screen'));

@@ -3,7 +3,12 @@ export const available = (episode, purchased) => episode.is_free || purchased.ha
 export function selectEpisodes(items, filter, purchased) {
   return items.filter(e => filter === filters[0] || (filter === filters[1] && e.is_free) || (filter === filters[2] && available(e,purchased)) || (filter === filters[3] && !available(e,purchased)));
 }
-export const destination = (e, purchased) => available(e,purchased) ? e.access_url : e.purchase_url;
+export function destination(e, purchased, internal = false) {
+  const open = available(e, purchased);
+  const pageId = open ? e.access_page_id : e.purchase_page_id;
+  if (internal && pageId) return 'https://t.me/post#' + encodeURIComponent(pageId);
+  return open ? e.access_url : e.purchase_url;
+}
 // Repeated mirrored branches from the reference: crown, left/right/centre, root.
 export function treeGeometry(count, width, heights) {
   if (!count) return {positions:[],links:[],height:120};

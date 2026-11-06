@@ -21,3 +21,11 @@ test('tree has valid links, reachable nodes and safe bounds for 0–24 nodes',()
  for(const [x,y]of g.positions){assert(x>0&&x<w);assert(y>=0&&y+105<g.height);}
  }
 });
+
+test('Notibot uses the exact access/purchase page ID; standalone keeps original URLs',()=>{
+ for(const e of items)for(const owned of [new Set(),new Set([e.order])]){
+  const open=e.is_free||owned.has(e.order);
+  assert.equal(destination(e,owned,true),'https://t.me/post#'+encodeURIComponent(open?e.access_page_id:e.purchase_page_id));
+  assert.equal(destination(e,owned),open?e.access_url:e.purchase_url);
+ }
+});
