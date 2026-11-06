@@ -1,0 +1,26 @@
+export const filters = ['Все эфиры', 'Бесплатные', 'Доступные мне', 'Не купленные'];
+export const available = (episode, purchased) => episode.is_free || purchased.has(episode.order);
+export function selectEpisodes(items, filter, purchased) {
+  return items.filter(e => filter === filters[0] || (filter === filters[1] && e.is_free) || (filter === filters[2] && available(e,purchased)) || (filter === filters[3] && !available(e,purchased)));
+}
+export const destination = (e, purchased) => available(e,purchased) ? e.access_url : e.purchase_url;
+// Repeated mirrored branches from the reference: crown, left/right/centre, root.
+export function treeGeometry(count, width, heights) {
+  if (!count) return {positions:[],links:[],height:120};
+  const positions=[[width*.5,32]], links=[];
+  let sideBottom=0;
+  let parent=0, y=32+Math.max(72,heights[0]*.65+12);
+  for(let i=1;i<count;){
+    y=Math.max(y,sideBottom+12);
+    const remaining=count-i;
+    if(remaining===1){positions.push([width*.5,y]);links.push([parent,i]);break;}
+    const left=i++,right=i++;
+    positions[left]=[width*.17,y];positions[right]=[width*.83,y];
+    links.push([parent,left],[parent,right]);
+    const branchHeight=Math.max(heights[left],heights[right]);
+    sideBottom=y+branchHeight;
+    if(i<count){const centre=i++;positions[centre]=[width*.5,Math.max(y+Math.max(72,branchHeight*.65+12),positions[parent][1]+heights[parent]+12)];links.push([parent,centre],[left,centre],[right,centre]);parent=centre;y=positions[centre][1]+Math.max(72,heights[centre]*.65+12);}
+  }
+  const height=Math.max(...positions.map((p,i)=>p[1]+heights[i]))+24;
+  return {positions,links,height};
+}

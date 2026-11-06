@@ -1,0 +1,1 @@
+window.NOTIBOT_INTEGRATION_CONFIG={persistIdentity:'none',autoAttachIdentityToForms:false,exposeThemeVariables:false};
