@@ -14,10 +14,15 @@ function updateEnvironment(){
  $('.demo').hidden=embedded;
  $('.profile').hidden=embedded;
  $('.access-tools').hidden=!embedded;
- $('.footer').textContent=embedded?'Доступ к платным эфирам определяется по оплаченным товарам Notibot.':'Демонстрация интерфейса. Тестовые покупки не являются настоящими.';
+ $('.footer').hidden=embedded;
+ $('.footer').textContent='Демонстрация интерфейса. Тестовые покупки не являются настоящими.';
+}
+function showMessage(message=''){
+ const notice=$('#integration-status');
+ notice.textContent=message;notice.hidden=!message;
 }
 function updateStatus(){
- $('#integration-status').textContent=!embedded?'Предпросмотр · демо-режим':!sdk?'Не удалось загрузить Notibot. Обновите страницу.':!connected?'Ожидаем подключения к Notibot…':accessState==='loading'?'Проверяем покупки…':accessState==='error'?'Не удалось проверить покупки. Нажмите «Обновить доступ».':'Покупки проверены';
+ showMessage(embedded&&(!sdk||accessState==='error')?'Не удалось обновить доступ. Попробуйте ещё раз.':'');
 }
 function syncEnvironment(){
  connected=true;embedded=true;
@@ -80,10 +85,10 @@ $('#om-screen').addEventListener('click',event=>{
  const link=event.target.closest('a.orbit-node');
  if(!link||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;
  event.preventDefault();
- if(embedded&&!connected){$('#integration-status').textContent='Дождитесь подключения к Notibot и нажмите ещё раз.';return;}
+ if(embedded&&!connected){showMessage('Попробуйте ещё раз через несколько секунд.');return;}
  const episode=items.find(e=>e.order===Number(link.dataset.order));
  if(embedded&&!episode.is_free&&accessState!=='ready'){updateStatus();return;}
- try{if(embedded&&sdk){sdk.openLink(destination(episode,purchased,true));}else{window.location.assign(link.href);}}catch(error){$('#integration-status').textContent='Не удалось открыть эфир. Попробуйте ещё раз.';}
+ try{if(embedded&&sdk){sdk.openLink(destination(episode,purchased,true));}else{window.location.assign(link.href);}}catch(error){showMessage('Не удалось открыть эфир. Попробуйте ещё раз.');}
 });
 new ResizeObserver(schedule).observe($('#om-screen'));
 document.fonts.ready.then(schedule);
