@@ -45,9 +45,9 @@ function layout(){
 function schedule(){cancelAnimationFrame(frame);frame=requestAnimationFrame(layout);}
 function render(){
  const visible=selectEpisodes(items,filter,purchased);
- $('.chips').innerHTML=filters.map(f=>`<button data-filter="${f}" aria-pressed="${f===filter}">${f}</button>`).join('');
+ $('#episode-filter').value=filter;
  $('#count').textContent=`Показано ${visible.length} из ${items.length} · Доступно ${items.filter(e=>available(e,purchased)).length}`;
- $('#om-screen').innerHTML=visible.length?`<div class="constellation" aria-label="Дерево эфиров"><svg class="constellation-links" aria-hidden="true"></svg>${visible.map(e=>{const open=available(e,purchased),status=e.is_free?'Бесплатный':open?(embedded?'Куплен':'Куплен · демо'):(embedded&&accessState!=='ready'?'Проверяем доступ':'Не куплен');return `<a class="orbit-node ${open?'purchased':'locked'}" data-order="${e.order}" style="--topic:${colors[(e.order-1)%colors.length]}" href="${escape(destination(e,purchased,embedded))}" aria-label="${escape(e.title)} — ${status}" title="${escape(e.description)}"><span class="orbit-disc"><i data-lucide="${symbols[(e.order-1)%symbols.length]}" aria-hidden="true"></i>${open?'<span class="owned-mark" aria-hidden="true">✓</span>':''}</span><span class="orbit-title">${escape(e.title)}</span><span class="episode-status">${status}</span></a>`;}).join('')}</div>`:'<p class="empty">Здесь пока нет эфиров. Выберите другой фильтр или тестовый сценарий.</p>';
+ $('#om-screen').innerHTML=visible.length?`<div class="constellation" aria-label="Дерево эфиров"><svg class="constellation-links" aria-hidden="true"></svg>${visible.map(e=>{const open=available(e,purchased),status=e.is_free?'Бесплатный':open?(embedded?'Куплен':'Куплен · демо'):(embedded&&accessState!=='ready'?'Проверяем доступ':'Не куплен');return `<a class="orbit-node ${open?'purchased':'locked'}" data-order="${e.order}" style="--topic:${colors[(e.order-1)%colors.length]}" href="${escape(destination(e,purchased,embedded))}" aria-label="${escape(e.title)} — ${status}" title="${escape(e.description)}"><span class="orbit-disc"><i data-lucide="${symbols[(e.order-1)%symbols.length]}" aria-hidden="true"></i>${open?'<span class="owned-mark" aria-hidden="true">✓</span>':''}</span><span class="orbit-title">${escape(e.title)}</span></a>`;}).join('')}</div>`:'<p class="empty">Здесь пока нет эфиров. Выберите другой фильтр.</p>';
  globalThis.lucide?.createIcons();
  schedule();
 }
@@ -73,7 +73,8 @@ function refreshAfterReturn(){
  clearTimeout(refreshTimer);
  refreshTimer=setTimeout(()=>{void refresh(true);},200);
 }
-$('.chips').addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(b){filter=b.dataset.filter;render();}});
+$('#episode-filter').innerHTML=filters.map(f=>`<option value="${f}">${f}</option>`).join('');
+$('#episode-filter').addEventListener('change',event=>{filter=event.target.value;render();});
 $('#scenario').addEventListener('change',async e=>{if(embedded)return;provider.setScenario(e.target.value,items);await refresh();});
 $('#purchases').addEventListener('change',async e=>{if(embedded||!e.target.matches('[data-purchase]'))return;const id=Number(e.target.dataset.purchase);e.target.checked?provider.purchased.add(id):provider.purchased.delete(id);await refresh();});
 $('#refresh').addEventListener('click',()=>{void refresh(true);});

@@ -12,19 +12,19 @@ export function destination(e, purchased, internal = false) {
 // Repeated mirrored branches from the reference: crown, left/right/centre, root.
 export function treeGeometry(count, width, heights) {
   if (!count) return {positions:[],links:[],height:120};
-  const positions=[[width*.5,32]], links=[];
+  const positions=[[width*.5,28]], links=[];
   let sideBottom=0;
-  let parent=0, y=32+Math.max(72,heights[0]*.65+12);
+  let parent=0, y=28+Math.max(60,heights[0]*.55+10);
   for(let i=1;i<count;){
-    y=Math.max(y,sideBottom+12);
+    y=Math.max(y,sideBottom+10);
     const remaining=count-i;
-    if(remaining===1){positions.push([width*.5,y]);links.push([parent,i]);break;}
+    if(remaining===1){y=Math.max(y,positions[parent][1]+heights[parent]+10);positions.push([width*.5,y]);links.push([parent,i]);break;}
     const left=i++,right=i++;
     positions[left]=[width*.17,y];positions[right]=[width*.83,y];
     links.push([parent,left],[parent,right]);
     const branchHeight=Math.max(heights[left],heights[right]);
     sideBottom=y+branchHeight;
-    if(i<count){const centre=i++;positions[centre]=[width*.5,Math.max(y+Math.max(72,branchHeight*.65+12),positions[parent][1]+heights[parent]+12)];links.push([parent,centre],[left,centre],[right,centre]);parent=centre;y=positions[centre][1]+Math.max(72,heights[centre]*.65+12);}
+    if(i<count){const centre=i++;positions[centre]=[width*.5,Math.max(y+Math.max(60,branchHeight*.55+10),positions[parent][1]+heights[parent]+10)];links.push([parent,centre],[left,centre],[right,centre]);parent=centre;y=positions[centre][1]+Math.max(60,heights[centre]*.55+10);}
   }
   const height=Math.max(...positions.map((p,i)=>p[1]+heights[i]))+24;
   return {positions,links,height};
