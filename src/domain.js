@@ -14,17 +14,17 @@ export function treeGeometry(count, width, heights) {
   if (!count) return {positions:[],links:[],height:120};
   const positions=[[width*.5,28]], links=[];
   let sideBottom=0;
-  let parent=0, y=28+Math.max(60,heights[0]*.55+10);
+  let parent=0, y=28+Math.max(52,heights[0]*.5+8);
   for(let i=1;i<count;){
-    y=Math.max(y,sideBottom+10);
+    y=Math.max(y,sideBottom+8);
     const remaining=count-i;
-    if(remaining===1){y=Math.max(y,positions[parent][1]+heights[parent]+10);positions.push([width*.5,y]);links.push([parent,i]);break;}
+    if(remaining===1){y=Math.max(y,positions[parent][1]+heights[parent]+8);positions.push([width*.5,y]);links.push([parent,i]);break;}
     const left=i++,right=i++;
     positions[left]=[width*.17,y];positions[right]=[width*.83,y];
     links.push([parent,left],[parent,right]);
     const branchHeight=Math.max(heights[left],heights[right]);
     sideBottom=y+branchHeight;
-    if(i<count){const centre=i++;positions[centre]=[width*.5,Math.max(y+Math.max(60,branchHeight*.55+10),positions[parent][1]+heights[parent]+10)];links.push([parent,centre],[left,centre],[right,centre]);parent=centre;y=positions[centre][1]+Math.max(60,heights[centre]*.55+10);}
+    if(i<count){const centre=i++;positions[centre]=[width*.5,Math.max(y+Math.max(52,branchHeight*.5+8),positions[parent][1]+heights[parent]+8)];links.push([parent,centre],[left,centre],[right,centre]);parent=centre;y=positions[centre][1]+Math.max(52,heights[centre]*.5+8);}
   }
   const height=Math.max(...positions.map((p,i)=>p[1]+heights[i]))+24;
   return {positions,links,height};
