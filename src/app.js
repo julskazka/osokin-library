@@ -1,22 +1,33 @@
 import {filters,available,selectEpisodes,destination,treeGeometry} from './domain.js';
-import {DemoAccessProvider} from './access-provider.js';
+import {DemoAccessProvider,NotibotAccessProvider} from './access-provider.js';
 const provider=new DemoAccessProvider();
 const $=s=>document.querySelector(s);
 const escape=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const colors=['#c5a7f2','#8ecfe1','#dfb2ba','#e7cd87'];
 const symbols=['sparkles','compass','sun','key-round','hand-heart','tree-pine','orbit','network'];
 let items=[],purchased=new Set(),filter=filters[0],frame;
-let embedded=window.parent!==window;
-const bridge=window.NotibotIntegration;
-function syncEnvironment(state){
- embedded=window.parent!==window || Boolean(state?.connected);
- $('.demo').hidden=embedded; $('.profile').hidden=embedded;
- $('#integration-status').textContent=state?.connected?'Библиотека подключена к Notibot':embedded?'Библиотека · подключение к Notibot ожидается':'Предпросмотр · демо-режим';
- $('.footer').textContent=embedded?'Бесплатные эфиры доступны. Проверка оплаченных заказов пока не подключена.':'Демонстрация интерфейса. Реальные покупки не проверяются.';
- if(items.length)refresh();
+const demoProvider=provider;
+const sdk=window.notibot;
+const accessProvider=new NotibotAccessProvider(sdk);
+let embedded=window.parent!==window,connected=false,accessState='waiting',refreshVersion=0;
+function updateEnvironment(){
+ $('.demo').hidden=embedded;
+ $('.profile').hidden=embedded;
+ $('.access-tools').hidden=!embedded;
+ $('.footer').textContent=embedded?'Доступ к платным эфирам определяется по оплаченным товарам Notibot.':'Демонстрация интерфейса. Тестовые покупки не являются настоящими.';
 }
-bridge?.onUpdate(syncEnvironment);
-syncEnvironment(bridge?.getState());
+function updateStatus(){
+ $('#integration-status').textContent=!embedded?'Предпросмотр · демо-режим':!sdk?'Не удалось загрузить Notibot. Обновите страницу.':!connected?'Ожидаем подключения к Notibot…':accessState==='loading'?'Проверяем покупки…':accessState==='error'?'Не удалось проверить покупки. Нажмите «Обновить доступ».':'Покупки проверены';
+}
+function syncEnvironment(){
+ connected=true;embedded=true;
+ // Clear previous user's entitlements before any asynchronous work.
+ refreshVersion++;purchased=new Set();accessState='waiting';
+ updateEnvironment();
+ if(items.length)void refresh(true);else updateStatus();
+}
+updateEnvironment();updateStatus();
+sdk?.onUpdate(syncEnvironment);
 function layout(){
  const map=$('.constellation');if(!map)return;
  const nodes=[...map.querySelectorAll('.orbit-node')];
@@ -31,26 +42,48 @@ function render(){
  const visible=selectEpisodes(items,filter,purchased);
  $('.chips').innerHTML=filters.map(f=>`<button data-filter="${f}" aria-pressed="${f===filter}">${f}</button>`).join('');
  $('#count').textContent=`Показано ${visible.length} из ${items.length} · Доступно ${items.filter(e=>available(e,purchased)).length}`;
- $('#om-screen').innerHTML=visible.length?`<div class="constellation" aria-label="Дерево эфиров"><svg class="constellation-links" aria-hidden="true"></svg>${visible.map(e=>{const open=available(e,purchased),status=e.is_free?'Бесплатный':open?'Куплен · демо':(embedded?'Проверить доступ':'Не куплен');return `<a class="orbit-node ${open?'purchased':'locked'}" data-order="${e.order}" style="--topic:${colors[(e.order-1)%colors.length]}" href="${escape(destination(e,purchased,embedded))}" aria-label="${escape(e.title)} — ${status}" title="${escape(e.description)}"><span class="orbit-disc"><i data-lucide="${symbols[(e.order-1)%symbols.length]}" aria-hidden="true"></i>${open?'<span class="owned-mark" aria-hidden="true">✓</span>':''}</span><span class="orbit-title">${escape(e.title)}</span><span class="episode-status">${status}</span></a>`;}).join('')}</div>`:'<p class="empty">Здесь пока нет эфиров. Выберите другой фильтр или тестовый сценарий.</p>';
+ $('#om-screen').innerHTML=visible.length?`<div class="constellation" aria-label="Дерево эфиров"><svg class="constellation-links" aria-hidden="true"></svg>${visible.map(e=>{const open=available(e,purchased),status=e.is_free?'Бесплатный':open?(embedded?'Куплен':'Куплен · демо'):(embedded&&accessState!=='ready'?'Проверяем доступ':'Не куплен');return `<a class="orbit-node ${open?'purchased':'locked'}" data-order="${e.order}" style="--topic:${colors[(e.order-1)%colors.length]}" href="${escape(destination(e,purchased,embedded))}" aria-label="${escape(e.title)} — ${status}" title="${escape(e.description)}"><span class="orbit-disc"><i data-lucide="${symbols[(e.order-1)%symbols.length]}" aria-hidden="true"></i>${open?'<span class="owned-mark" aria-hidden="true">✓</span>':''}</span><span class="orbit-title">${escape(e.title)}</span><span class="episode-status">${status}</span></a>`;}).join('')}</div>`:'<p class="empty">Здесь пока нет эфиров. Выберите другой фильтр или тестовый сценарий.</p>';
  globalThis.lucide?.createIcons();
  schedule();
 }
 function controls(){
  $('#purchases').innerHTML=items.filter(e=>!e.is_free).map(e=>`<label><input type="checkbox" data-purchase="${e.order}" ${purchased.has(e.order)?'checked':''}>${escape(e.title)}</label>`).join('');
 }
-async function refresh(){const state=await provider.refresh();purchased=embedded?new Set():state.purchased;controls();render();}
+async function refresh(forceRefresh=false){
+ const version=++refreshVersion;
+ if(!embedded){const state=await demoProvider.refresh();if(version!==refreshVersion)return;purchased=state.purchased;controls();render();updateStatus();return;}
+ purchased=new Set();
+ if(!connected){accessState='waiting';updateStatus();render();return;}
+ accessState='loading';updateStatus();render();
+ try{
+  const state=await accessProvider.refresh(items,{forceRefresh});
+  if(version!==refreshVersion)return;
+  purchased=state.purchased;accessState='ready';
+ }catch(error){if(version!==refreshVersion)return;purchased=new Set();accessState='error';}
+ updateStatus();render();
+}
+let refreshTimer;
+function refreshAfterReturn(){
+ if(!items.length)return;
+ clearTimeout(refreshTimer);
+ refreshTimer=setTimeout(()=>{void refresh(true);},200);
+}
 $('.chips').addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(b){filter=b.dataset.filter;render();}});
 $('#scenario').addEventListener('change',async e=>{if(embedded)return;provider.setScenario(e.target.value,items);await refresh();});
 $('#purchases').addEventListener('change',async e=>{if(embedded||!e.target.matches('[data-purchase]'))return;const id=Number(e.target.dataset.purchase);e.target.checked?provider.purchased.add(id):provider.purchased.delete(id);await refresh();});
-$('#refresh').addEventListener('click',refresh);
-window.addEventListener('focus',()=>{if(items.length)setTimeout(refresh,200);});
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&items.length)refresh();});
+$('#refresh').addEventListener('click',()=>{void refresh(true);});
+$('#refresh-access').addEventListener('click',()=>{void refresh(true);});
+window.addEventListener('focus',refreshAfterReturn);
+window.addEventListener('pageshow',event=>{if(event.persisted)refreshAfterReturn();});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshAfterReturn();});
 $('#om-screen').addEventListener('click',event=>{
  const link=event.target.closest('a.orbit-node');
  if(!link||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;
  event.preventDefault();
- if(embedded&&!bridge?.getState().connected){$('#integration-status').textContent='Дождитесь подключения к Notibot и нажмите ещё раз.';return;}
- try{if(bridge){bridge.openLink(link.getAttribute('href'));}else{window.location.assign(link.href);}}catch(error){$('#integration-status').textContent='Не удалось открыть эфир. Попробуйте ещё раз.';}
+ if(embedded&&!connected){$('#integration-status').textContent='Дождитесь подключения к Notibot и нажмите ещё раз.';return;}
+ const episode=items.find(e=>e.order===Number(link.dataset.order));
+ if(embedded&&!episode.is_free&&accessState!=='ready'){updateStatus();return;}
+ try{if(embedded&&sdk){sdk.openLink(destination(episode,purchased,true));}else{window.location.assign(link.href);}}catch(error){$('#integration-status').textContent='Не удалось открыть эфир. Попробуйте ещё раз.';}
 });
 new ResizeObserver(schedule).observe($('#om-screen'));
 document.fonts.ready.then(schedule);
