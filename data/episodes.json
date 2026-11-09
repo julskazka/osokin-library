@@ -1,17 +1,6 @@
 [
   {
     "order": 1,
-    "title": "Места силы 2.0",
-    "description": "Для тех, кто проживает сложный этап: безвыходная ситуация, ничего не помогает, опускаются руки",
-    "is_free": true,
-    "purchase_url": "",
-    "access_url": "https://t.me/Info_aboutyou_bot/aboutme?startapp=a_3PgqiaiqPOEAngKFtwvawP_lp",
-    "purchase_page_id": "",
-    "access_page_id": "3PgqiaiqPOEAngKFtwvawP",
-    "product_id": ""
-  },
-  {
-    "order": 2,
     "title": "Взросление",
     "description": "Если у вас нет того, что вы хотите, и как это исправить",
     "is_free": true,
@@ -22,7 +11,7 @@
     "product_id": ""
   },
   {
-    "order": 3,
+    "order": 2,
     "title": "Ум: Жадность",
     "description": "Если вы мучаетесь от упущенных возможностей, посмотрите этот эфир, вас отпустит",
     "is_free": true,
@@ -33,7 +22,7 @@
     "product_id": ""
   },
   {
-    "order": 4,
+    "order": 3,
     "title": "Защита от недоброжелателей",
     "description": "Как нас могут «сглазить» случайно и намеренно, как защитить себя и близких, можно ли публиковать фото себя и детей в интернете",
     "is_free": true,
@@ -44,7 +33,7 @@
     "product_id": ""
   },
   {
-    "order": 5,
+    "order": 4,
     "title": "Вебинар «Страхи. Тревоги. Стресс»",
     "description": "Для тех, кто вечно тревожится, разбор что такое страхи и как с ними дружить",
     "is_free": true,
@@ -55,8 +44,8 @@
     "product_id": ""
   },
   {
-    "order": 6,
-    "title": "Род. Эфир 1: вопросы и ответы двух родов",
+    "order": 5,
+    "title": "Род",
     "description": "Для тех, кто хочет понять, как устроена родовая система и что с ней делать",
     "is_free": false,
     "purchase_url": "https://t.me/Info_aboutyou_bot/aboutme?startapp=a_5BVrtljTZLgHihfSy6FBSh_lp",
@@ -66,29 +55,7 @@
     "product_id": "27JhodoXA0N6dVsi7BmKiV"
   },
   {
-    "order": 7,
-    "title": "Род. Эфир 2, часть 1",
-    "description": "Для тех, кто ищет свои родовые корни и хочет понять, откуда в семье повторяются одни и те же истории",
-    "is_free": false,
-    "purchase_url": "https://t.me/Info_aboutyou_bot/aboutme?startapp=a_5BMTgGwjwr1aQvhSpZ5V1I_lp",
-    "access_url": "https://t.me/Info_aboutyou_bot/aboutme?startapp=a_6wem3XUtYxPe1l6Ya0uQHO_lp",
-    "purchase_page_id": "5BMTgGwjwr1aQvhSpZ5V1I",
-    "access_page_id": "6wem3XUtYxPe1l6Ya0uQHO",
-    "product_id": "5wotkD2pcor3FX0xCn0mSQ"
-  },
-  {
-    "order": 8,
-    "title": "Род. Эфир 2, часть 2: духи рода",
-    "description": "Для тех, кто хочет понять, как устроена родовая система, и задается вопросами о родовых программах",
-    "is_free": false,
-    "purchase_url": "https://t.me/Info_aboutyou_bot/aboutme?startapp=a_12a2Yh1lNiJvPXBBP6bnaZ_lp",
-    "access_url": "https://t.me/Info_aboutyou_bot/aboutme?startapp=a_6sWie0itqif0tRD7Sdk2Qw_lp",
-    "purchase_page_id": "12a2Yh1lNiJvPXBBP6bnaZ",
-    "access_page_id": "6sWie0itqif0tRD7Sdk2Qw",
-    "product_id": "289o0Jxeh7DIouErkzcjLE"
-  },
-  {
-    "order": 9,
+    "order": 6,
     "title": "Душа Женщины",
     "description": "Общаемся с Душами, которые выбрали женские воплощения, спрашиваем, почему выбрали",
     "is_free": false,
@@ -99,7 +66,7 @@
     "product_id": "3mheVnqQlKQby5u2FPrwFz"
   },
   {
-    "order": 10,
+    "order": 7,
     "title": "Эгрегоры",
     "description": "Как выходить из под эгрегора, как выбирать эгрегор, который сейчас продвинет по жизни",
     "is_free": false,
@@ -110,7 +77,7 @@
     "product_id": "4rdFkriJoKnB82C4GrZIvm"
   },
   {
-    "order": 11,
+    "order": 8,
     "title": "Ангелы-кураторы",
     "description": "Для людей с Даром инструкция, как просить своих Кураторов о помощи в развитии Дара и его применении",
     "is_free": false,
@@ -121,7 +88,7 @@
     "product_id": "6oYBog5TVzzIUDTmBNsfJk"
   },
   {
-    "order": 12,
+    "order": 9,
     "title": "Школа",
     "description": "Для тех, кто против общеобразовательной школы и хочет понять, как с ней примириться или почему правильно из нее выйти",
     "is_free": false,
@@ -132,7 +99,7 @@
     "product_id": "7IULEvdt2JdldY97evDj9o"
   },
   {
-    "order": 13,
+    "order": 10,
     "title": "Голос Души",
     "description": "Как внутри себя услышать Душу, алгоритм действий для понимания своей Души",
     "is_free": false,
@@ -143,7 +110,7 @@
     "product_id": "5zinEefiP7AgmX7SlSCnJp"
   },
   {
-    "order": 14,
+    "order": 11,
     "title": "Права Доступа",
     "description": "Как понять на что мы имеем право в этом мире, а на что не имеем",
     "is_free": false,
@@ -154,7 +121,7 @@
     "product_id": "4gMIJYwAeMPiqpUXi0FTlg"
   },
   {
-    "order": 15,
+    "order": 12,
     "title": "Карма",
     "description": "Что такое Карма, какая бывает, что сделать, чтобы Карма не била по голове и была положительной",
     "is_free": false,
@@ -165,7 +132,7 @@
     "product_id": "3WcP9eAeb3gnZ5MsgbPRU0"
   },
   {
-    "order": 16,
+    "order": 13,
     "title": "Законы",
     "description": "Какие есть законы на нашей планете, как их соблюдать чтобы не получать проблемы",
     "is_free": false,
@@ -176,7 +143,7 @@
     "product_id": "0qPzld0IWP9lpzqO876INz"
   },
   {
-    "order": 17,
+    "order": 14,
     "title": "Знаки",
     "description": "Что такое знаки, откуда они взялись, зачем они нужны и как разобраться, что сейчас происходит — знак, а не галлюцинации",
     "is_free": false,
@@ -187,7 +154,7 @@
     "product_id": "0R1LSNl1uhAS05tGpOT752"
   },
   {
-    "order": 18,
+    "order": 15,
     "title": "Тело для духовного существа",
     "description": "Зачем есть материальный мир, зачем есть тело и какая его большая задача в нашем измерении",
     "is_free": false,
@@ -198,7 +165,7 @@
     "product_id": "0dTKZH65GXBfNFWDLqJJJh"
   },
   {
-    "order": 19,
+    "order": 16,
     "title": "Справляться с будущим",
     "description": "Для тех, кто живет в ожидании плохого и хочет простые рабочие инструменты",
     "is_free": false,
@@ -209,18 +176,7 @@
     "product_id": "5sXH9bWQdEMQrUbIX4lDic"
   },
   {
-    "order": 20,
-    "title": "Справляться с будущим 2",
-    "description": "Для тех, кто устал тревожиться от новостей и хочет вместо паники спокойный план",
-    "is_free": false,
-    "purchase_url": "https://t.me/Info_aboutyou_bot/aboutme?startapp=a_26RQlgbCMJItvubX2B1t0t_lp",
-    "access_url": "https://t.me/Info_aboutyou_bot/aboutme?startapp=a_4i2kjApdDAtIp019Zjvpbo_lp",
-    "purchase_page_id": "26RQlgbCMJItvubX2B1t0t",
-    "access_page_id": "4i2kjApdDAtIp019Zjvpbo",
-    "product_id": "6YmZ550z1ycH3JGWVkuOOR"
-  },
-  {
-    "order": 21,
+    "order": 17,
     "title": "Как просить, чтобы было дано",
     "description": "Кого просить, когда и о чем, чтобы эту помощь получить",
     "is_free": false,
@@ -231,7 +187,7 @@
     "product_id": "5DfXAAgexjoCCGBbVKCdJe"
   },
   {
-    "order": 22,
+    "order": 18,
     "title": "Доверие Вселенной",
     "description": "Как научиться доверять миру, не теряя баланс с ответственностью",
     "is_free": false,
@@ -242,7 +198,7 @@
     "product_id": "2JGmHsRML9XCvGcO6BvNZV"
   },
   {
-    "order": 23,
+    "order": 19,
     "title": "Энергообмен",
     "description": "Как на самом деле работает энергообмен в нашем мире, какие есть правила вечного богатства с точки зрения обмена энергией, правда ли что «касса наверху»?",
     "is_free": false,
@@ -253,7 +209,7 @@
     "product_id": "36WpPgzVQWIAvD1ZZOfGuh"
   },
   {
-    "order": 24,
+    "order": 20,
     "title": "Другая ветка реальности",
     "description": "Что такое ветки и версии реальности, и как можно их менять, чтобы независимо от внешних обстоятельств жить счастливую жизнь",
     "is_free": false,
