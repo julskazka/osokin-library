@@ -12,14 +12,14 @@ const topicSymbols={
  'вебинар «страхи. тревоги. стресс»':'heart-pulse',
  'род':'network',
  'душа женщины':'flower-2',
- 'эгрегоры':'ban',
+ 'эгрегоры':'custom-pyramid-eye',
  'ангелы-кураторы':'custom-wings',
  'школа':'school',
  'голос души':'audio-lines',
  'права доступа':'key-round',
  'карма':'rotate-ccw',
  'законы':'scale',
- 'знаки':'orbit',
+ 'знаки':'ban',
  'тело для духовного существа':'person-standing',
  'справляться с будущим':'biceps-flexed',
  'как просить, чтобы было дано':'hand-heart',
@@ -36,7 +36,10 @@ const symbolFor=title=>topicSymbols[String(title).trim().toLowerCase()]||'sparkl
 // Thin mirrored wing outlines, matching the existing Lucide crystal linework.
 const crystalIcon=title=>{
  const symbol=symbolFor(title);
- if(symbol==='custom-wings')return '<svg class="crystal-wings" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 17.5c-2.6-3.8-5.3-3.7-8.8-8.9 3.9 1.5 5.2.3 7.4-3.2.6 3.6 1.2 6.3 1.4 12.1Z"/><path d="M12 17.5c2.6-3.8 5.3-3.7 8.8-8.9-3.9 1.5-5.2.3-7.4-3.2-.6 3.6-1.2 6.3-1.4 12.1Z"/><path d="M5.3 9.4c2.4 1.9 4.4 3.8 6.7 8.1M18.7 9.4c-2.4 1.9-4.4 3.8-6.7 8.1"/></svg>';
+ // Clear, spread angel wings: feather outlines, without changing the crystal style.
+ if(symbol==='custom-wings')return '<svg class="crystal-wings" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.5 19C8 16 4 15.5 2 10c2 1 3.1.7 3.5-2.6 1.2 1.8 2.5 1.9 3-2.4 2.6 3.8 3.1 8.2 3 14Z"/><path d="M12.5 19C16 16 20 15.5 22 10c-2 1-3.1.7-3.5-2.6-1.2 1.8-2.5 1.9-3-2.4-2.6 3.8-3.1 8.2-3 14Z"/><path d="M3.8 11.2 9.9 16M6.1 8.6l4.6 6.8M20.2 11.2 14.1 16M17.9 8.6l-4.6 6.8"/></svg>';
+ // Eye of providence inside a fine triangular pyramid.
+ if(symbol==='custom-pyramid-eye')return '<svg class="crystal-pyramid-eye" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 22 20H2L12 3Z"/><path d="M6.8 13.3c3.2-3.3 7.2-3.3 10.4 0-3.2 3.2-7.2 3.2-10.4 0Z"/><circle cx="12" cy="13.3" r="1.65"/></svg>';
  return `<i data-lucide="${symbol}" aria-hidden="true"></i>`;
 };
 let items=[],purchased=new Set(),filter=filters[0],frame;
