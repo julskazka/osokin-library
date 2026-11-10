@@ -22,9 +22,11 @@
 #osokin-mvp .library-hints{display:grid;gap:8px}
 #osokin-mvp .library-hints>div{display:flex;align-items:center;gap:10px;color:#c5c8de;font-size:12px;line-height:1.5}
 #osokin-mvp .library-hints strong{color:#f0e9ff;font-weight:600}
-#osokin-mvp .hint-crystal{display:inline-block;flex:none;width:16px;height:16px;border-radius:50%;background:#202338;position:relative;vertical-align:middle}
-#osokin-mvp .hint-crystal:after{content:"";position:absolute;inset:3px;border-radius:50%;border:1px solid currentColor;opacity:.25}
-#osokin-mvp .hint-crystal.available{color:#c5a7f2;border:2px solid #c5a7f2;background:#433558;box-shadow:0 0 0 2px #c5a7f222,0 0 10px #c5a7f299}
+#osokin-mvp .hint-crystal{display:inline-grid;place-items:center;flex:none;width:24px;height:24px;box-sizing:border-box;border:1px solid #8d86ae;border-radius:50%;background:#202338;box-shadow:inset 0 0 8px #0004;position:relative;vertical-align:middle;color:#a99ec7;overflow:visible}
+#osokin-mvp .hint-crystal::before{content:"✧";display:block;font-size:15px;line-height:1;color:inherit;font-weight:400}
+#osokin-mvp .hint-crystal::after{content:"";position:absolute;inset:3px;border:1px solid currentColor;opacity:.18;border-radius:50%;pointer-events:none}
+#osokin-mvp .hint-crystal.available{color:#c5a7f2;border:2px solid #c5a7f2;background:#433558;box-shadow:0 0 0 3px #c5a7f21f,0 0 13px #c5a7f266}
+#osokin-mvp .hint-crystal.available::after{content:"✓";inset:auto;right:-5px;bottom:-3px;display:grid;place-items:center;width:13px;height:13px;box-sizing:border-box;border:2px solid #151729;border-radius:50%;background:#c5a7f2;color:#16182b;font-size:9px;font-weight:800;line-height:1;opacity:1}
 #osokin-mvp .hint-crystal.locked{color:#8d86ae;border:1px solid #8d86ae;background:#202338;box-shadow:inset 0 0 7px #0004;opacity:.72}
 #osokin-mvp .legend-owned-line{display:inline-block;flex:none;width:18px;border-top:2px solid #c5a7f2;filter:drop-shadow(0 0 3px #c5a7f2)}
 #osokin-mvp .map-legend{display:flex;flex-wrap:wrap;align-items:center;gap:8px 13px;font-size:11px;margin:0 0 12px}
