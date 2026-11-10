@@ -50,3 +50,7 @@
 #osokin-mvp .new-cover-image{position:static!important;display:block!important;width:94%!important;height:auto!important;max-height:none!important;object-fit:contain!important;object-position:center!important;margin:0 auto!important;border-radius:0!important}
 #osokin-mvp #refresh,#osokin-mvp .demo>small{display:none!important}
 #osokin-mvp .content{padding-top:16px}
+
+/* Free records glow as accessible but never show a purchase check mark */
+#osokin-mvp .hint-crystal.free{color:#c5a7f2;border:2px solid #c5a7f2;background:#433558;box-shadow:0 0 0 3px #c5a7f21f,0 0 13px #c5a7f266}
+#osokin-mvp .hint-crystal.free::after{content:"";inset:3px;width:auto;height:auto;right:3px;bottom:3px;background:none;border:1px solid currentColor;border-radius:50%;opacity:.18}
