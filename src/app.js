@@ -6,8 +6,8 @@ const escape=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&g
 const colors=['#c5a7f2','#8ecfe1','#dfb2ba','#e7cd87'];
 // One delicate Lucide outline per broadcast topic; crystal styling remains unchanged.
 const topicSymbols={
- 'взросление':'sprout',
- 'ум: жадность':'brain',
+ 'взросление':'custom-up-arrow',
+ 'ум: жадность':'custom-coins',
  'защита от недоброжелателей':'shield',
  'вебинар «страхи. тревоги. стресс»':'heart-pulse',
  'род':'network',
@@ -19,8 +19,8 @@ const topicSymbols={
  'права доступа':'key-round',
  'карма':'rotate-ccw',
  'законы':'scale',
- 'знаки':'custom-no-entry',
- 'тело для духовного существа':'person-standing',
+ 'знаки':'check',
+ 'тело для духовного существа':'custom-person',
  'справляться с будущим':'biceps-flexed',
  'как просить, чтобы было дано':'hand-heart',
  'доверие вселенной':'heart-handshake',
@@ -36,6 +36,9 @@ const symbolFor=title=>topicSymbols[String(title).trim().toLowerCase()]||'sparkl
 // Thin mirrored wing outlines, matching the existing Lucide crystal linework.
 const crystalIcon=title=>{
  const symbol=symbolFor(title);
+ if(symbol==='custom-up-arrow') return `<svg class="crystal-up-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20V4M5.5 10.5 12 4l6.5 6.5"/></svg>`;
+ if(symbol==='custom-coins') return `<svg class="crystal-coins" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 21.5v3c0 2.2 8.5 2.2 8.5 0v-3"/><ellipse cx="6.25" cy="21.5" rx="4.25" ry="1.75"/><path d="M9.5 16.5v8c0 2.6 9 2.6 9 0v-8"/><ellipse cx="14" cy="16.5" rx="4.5" ry="2"/><path d="M17.5 11.5v12c0 2.5 8.5 2.5 8.5 0v-12"/><ellipse cx="21.75" cy="11.5" rx="4.25" ry="2"/><path d="M18 15.5c2.8 1.4 5.5 1.4 8 0M18 19.3c2.8 1.4 5.5 1.4 8 0"/></svg>`;
+ if(symbol==='custom-person') return `<svg class="crystal-person" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="4" r="2.2"/><path d="M3 9.3 12 11l9-1.7M12 11v5.3M12 16.3 6.7 22M12 16.3l5.3 5.7"/></svg>`;
  if(symbol==='custom-wings') return `
   <svg class="crystal-wings" xmlns="http://www.w3.org/2000/svg" width="29" height="29" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
    <ellipse cx="32" cy="13" rx="10" ry="3.5"/>
@@ -111,6 +114,12 @@ function render(){
  const visible=selectEpisodes(items,filter,purchased);
  $('#episode-filter').value=filter;
  $('#count').textContent=`Показано ${visible.length} из ${items.length} · Доступно ${items.filter(e=>available(e,purchased)).length}`;
+ const unlocked=items.filter(e=>available(e,purchased)).length;
+ const percent=items.length?Math.round(unlocked/items.length*100):0;
+ $('#library-progress-value').textContent=`${percent}%`;
+ $('#library-progress-detail').textContent=`${unlocked} из ${items.length} эфиров открыто`;
+ $('#library-progress-fill').style.width=`${percent}%`;
+ $('#library-progress-bar').setAttribute('aria-valuenow',String(percent));
  $('#om-screen').innerHTML=visible.length?`<div class="constellation" aria-label="Дерево эфиров"><svg class="constellation-links" aria-hidden="true"></svg>${visible.map(e=>{const open=available(e,purchased),status=e.is_free?'Бесплатный':open?(embedded?'Куплен':'Куплен · демо'):(embedded&&accessState!=='ready'?'Проверяем доступ':'Не куплен');return `<a class="orbit-node ${open?'purchased':'locked'}" data-order="${e.order}" style="--topic:${colors[(e.order-1)%colors.length]}" href="${escape(destination(e,purchased,embedded))}" aria-label="${escape(e.title)} — ${status}" title="${escape(e.description)}"><span class="orbit-disc">${crystalIcon(e.title)}${!e.is_free&&purchased.has(e.order)?'<span class="owned-mark" aria-hidden="true">✓</span>':''}</span><span class="orbit-title">${escape(e.title)}</span></a>`;}).join('')}</div>`:'<p class="empty">Здесь пока нет эфиров. Выберите другой фильтр.</p>';
  globalThis.lucide?.createIcons();
  schedule();
