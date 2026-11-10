@@ -41,3 +41,10 @@
 #osokin-mvp .guide-list details[open] .guide-plus{transform:rotate(45deg)}
 #osokin-mvp .guide-answer{padding:0 4px 16px 25px;color:#c3c8df;font-size:12px;line-height:1.65}
 @media(max-width:360px){#osokin-mvp .library-intro{padding:16px 13px}#osokin-mvp .library-guide{padding:17px 12px 9px}}
+
+/* New approved full cover: preserve original image, person, and complete composition */
+#osokin-mvp .hero.new-cover{min-height:0!important;padding:0!important;display:flex!important;align-items:center;justify-content:center;overflow:hidden;position:relative;mask-image:none!important;-webkit-mask-image:none!important;background:#0A0E27!important;border-radius:0!important}
+#osokin-mvp .hero.new-cover::before,#osokin-mvp .hero.new-cover::after{display:none!important}
+#osokin-mvp .new-cover-image{position:static!important;display:block!important;width:94%!important;height:auto!important;max-height:none!important;object-fit:contain!important;object-position:center!important;margin:0 auto!important;border-radius:0!important}
+#osokin-mvp #refresh,#osokin-mvp .demo>small{display:none!important}
+#osokin-mvp .content{padding-top:16px}
