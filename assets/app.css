@@ -72,3 +72,6 @@
 #osokin-mvp .library-hints .hint-crystal::before{font-size:13px}
 #osokin-mvp .filter-row{margin-top:0}
 @media(max-width:420px){#osokin-mvp .library-intro{padding:12px 13px 11px;margin:2px 0 12px}#osokin-mvp .library-intro h2{font-size:17px}#osokin-mvp .library-intro p{font-size:12px;margin-bottom:8px}#osokin-mvp .library-hints>div{font-size:11px;gap:8px}}
+
+/* Larger, legible feathered wings inside the existing angel crystal */
+#osokin-mvp .orbit-disc svg.crystal-wings{width:min(29px,83%)!important;height:min(27px,79%)!important;stroke-width:1.45;flex-shrink:0}
