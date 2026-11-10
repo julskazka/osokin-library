@@ -37,20 +37,11 @@ const symbolFor=title=>topicSymbols[String(title).trim().toLowerCase()]||'sparkl
 const crystalIcon=title=>{
  const symbol=symbolFor(title);
  if(symbol==='custom-wings') return `
-  <svg class="crystal-wings" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-   <path d="M11.1 18.8C8.8 15.8 6.7 13.8 3.4 12c-.2-2 1.1-4.6 3.1-6.6.3 1.9 1.3 3.4 3.5 4.5"/>
-   <path d="M12.9 18.8c2.3-3 4.4-5 7.7-6.8.2-2-1.1-4.6-3.1-6.6-.3 1.9-1.3 3.4-3.5 4.5"/>
-   <path d="M6.2 7.3 9.9 9.7"/>
-   <path d="M5.2 9.3 10 11.8"/>
-   <path d="M4.5 11.4 9.8 13.8"/>
-   <path d="M4.9 13.6 9.2 15.5"/>
-   <path d="M6.1 15.5 8.8 16.9"/>
-   <path d="M17.8 7.3 14.1 9.7"/>
-   <path d="M18.8 9.3 14 11.8"/>
-   <path d="M19.5 11.4 14.2 13.8"/>
-   <path d="M19.1 13.6 14.8 15.5"/>
-   <path d="M17.9 15.5 15.2 16.9"/>
-   <path d="M12 9.4v8.2"/>
+  <svg class="crystal-wings" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 32 28" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+   <path d="M15 23C11.6 19.1 7.2 18.2 2 11.9c4 1.2 5.9.4 6.6-2.4C9.1 7.4 8.7 5.9 8.8 3c3.5 3.9 6.5 8.5 6.2 20Z"/>
+   <path d="M17 23c3.4-3.9 7.8-4.8 13-11.1-4 1.2-5.9.4-6.6-2.4-.5-2.1-.1-3.6-.2-6.5-3.5 3.9-6.5 8.5-6.2 20Z"/>
+   <path d="M4 12.8 13 20M8.3 10l5.8 8M9 5.5l5.6 9.9"/>
+   <path d="M28 12.8 19 20M23.7 10l-5.8 8M23 5.5l-5.6 9.9"/>
   </svg>`;
  if(symbol==='custom-pyramid-eye') return `
   <svg class="crystal-pyramid-eye" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
