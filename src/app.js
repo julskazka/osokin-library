@@ -100,7 +100,20 @@ function layout(){
  map.style.height=geometry.height+'px';
  nodes.forEach((n,i)=>{n.style.setProperty('--x',geometry.positions[i][0]+'px');n.style.setProperty('--y',geometry.positions[i][1]+'px');});
  const svg=map.querySelector('svg');svg.setAttribute('viewBox',`0 0 ${map.clientWidth} ${geometry.height}`);
- svg.innerHTML=geometry.links.map(([a,b])=>{const p=geometry.positions[a],q=geometry.positions[b],oa=nodes[a].classList.contains('purchased'),ob=nodes[b].classList.contains('purchased');return `<line data-a="${a}" data-b="${b}" x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}" class="${oa&&ob?'owned-link':'next-link'}" style="--link:#b9c3e6"/>`;}).join('');
+ // Measure the actual outer circles after positioning: links must stop at their rims,
+ // never shine through the delicate symbols inside a crystal.
+ const mapRect=map.getBoundingClientRect();
+ const discs=nodes.map(node=>{
+  const rect=node.querySelector('.orbit-disc').getBoundingClientRect();
+  return {x:rect.left-mapRect.left+rect.width/2,y:rect.top-mapRect.top+rect.height/2,r:Math.min(rect.width,rect.height)/2+1};
+ });
+ svg.innerHTML=geometry.links.map(([a,b])=>{
+  const p=discs[a],q=discs[b],dx=q.x-p.x,dy=q.y-p.y,distance=Math.hypot(dx,dy);
+  if(distance<=p.r+q.r)return '';
+  const ux=dx/distance,uy=dy/distance;
+  const oa=nodes[a].classList.contains('purchased'),ob=nodes[b].classList.contains('purchased');
+  return `<line data-a="${a}" data-b="${b}" x1="${p.x+ux*p.r}" y1="${p.y+uy*p.r}" x2="${q.x-ux*q.r}" y2="${q.y-uy*q.r}" class="${oa&&ob?'owned-link':'next-link'}" style="--link:#b9c3e6"/>`;
+ }).join('');
 }
 function schedule(){cancelAnimationFrame(frame);frame=requestAnimationFrame(layout);}
 function render(){
