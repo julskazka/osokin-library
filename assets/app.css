@@ -90,3 +90,35 @@
 #osokin-mvp .orbit-disc svg.crystal-up-arrow{width:min(25px,80%)!important;height:min(25px,80%)!important;stroke-width:3.5}
 #osokin-mvp .orbit-disc svg.crystal-coins{width:min(27px,86%)!important;height:min(27px,86%)!important;stroke-width:1.5}
 @media(max-width:420px){#osokin-mvp .library-progress{padding:10px 12px;margin:3px 0 11px}}
+
+/* Cohesive readable pictograms: shared optical grid, stable crystal sizes. */
+#osokin-mvp .orbit-disc{place-items:center;isolation:isolate}
+#osokin-mvp .orbit-disc>svg:not(.owned-mark),#osokin-mvp .orbit-disc>svg[data-lucide]{display:block;position:relative;z-index:1;flex:0 0 auto;width:26px!important;height:26px!important;max-width:79%;max-height:79%;margin:0!important;transform-origin:center center;stroke-linecap:round;stroke-linejoin:round}
+#osokin-mvp .orbit-disc svg[data-lucide]{stroke-width:1.8}
+#osokin-mvp .orbit-disc svg.crystal-wings{width:30px!important;height:30px!important;max-width:85%;max-height:85%;stroke-width:2.8;transform:translateY(1px)}
+#osokin-mvp .orbit-disc svg.crystal-pyramid-eye{width:31px!important;height:31px!important;max-width:85%;max-height:85%;stroke-width:1.9;transform:translateY(-1px)}
+#osokin-mvp .orbit-disc svg.crystal-person{width:27px!important;height:27px!important;stroke-width:2.7}
+#osokin-mvp .orbit-disc svg.crystal-up-arrow{width:26px!important;height:26px!important;stroke-width:3.3}
+#osokin-mvp .orbit-disc svg.crystal-coins{width:30px!important;height:30px!important;stroke-width:1.8;transform:translateY(-2px)}
+#osokin-mvp .orbit-disc svg.crystal-no-entry{width:27px!important;height:27px!important}
+#osokin-mvp .orbit-disc .owned-mark{z-index:3}
+
+/* Readable modern typography, limited to the two instructional sections. */
+#osokin-mvp .library-intro,#osokin-mvp .library-guide{font-family:"Manrope","Segoe UI",Arial,sans-serif;font-optical-sizing:auto}
+#osokin-mvp .library-intro h2,#osokin-mvp .guide-top h2{font-family:"Manrope","Segoe UI",Arial,sans-serif;font-weight:700;letter-spacing:-.035em;line-height:1.24;color:#f7ecff;text-wrap:balance}
+#osokin-mvp .library-intro h2{font-size:clamp(18px,4.2vw,21px);margin:0 0 8px}
+#osokin-mvp .guide-top h2{font-size:clamp(18px,4.1vw,21px);margin:0}
+#osokin-mvp .library-intro p{font-size:13px;line-height:1.6;color:#d6d5ea;margin:0 0 12px;letter-spacing:0}
+#osokin-mvp .library-hints>div{font-size:12px;line-height:1.55;color:#ced0e5;gap:10px}
+#osokin-mvp .library-hints strong{font-weight:700;color:#f4ecff}
+#osokin-mvp .guide-list summary{font-family:inherit;font-size:13px;font-weight:650;line-height:1.5;letter-spacing:-.01em;padding:14px 0}
+#osokin-mvp .guide-answer{font-family:inherit;font-size:12.5px;line-height:1.7;color:#cfd0e6;letter-spacing:0}
+#osokin-mvp .guide-index{font-family:inherit;font-weight:700}
+@media(max-width:420px){
+ #osokin-mvp .library-intro h2{font-size:18px}
+ #osokin-mvp .guide-top h2{font-size:19px}
+ #osokin-mvp .library-intro p{font-size:12.5px;line-height:1.56;margin-bottom:10px}
+ #osokin-mvp .library-hints>div{font-size:11.5px;line-height:1.5;gap:9px}
+ #osokin-mvp .guide-list summary{font-size:12.5px}
+ #osokin-mvp .guide-answer{font-size:12px}
+}
