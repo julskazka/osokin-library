@@ -4,7 +4,30 @@ const provider=new DemoAccessProvider();
 const $=s=>document.querySelector(s);
 const escape=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const colors=['#c5a7f2','#8ecfe1','#dfb2ba','#e7cd87'];
-const symbols=['sparkles','compass','sun','key-round','hand-heart','tree-pine','orbit','network'];
+// One delicate Lucide outline per broadcast topic; crystal styling remains unchanged.
+const topicSymbols={
+ 'взросление':'sprout',
+ 'ум: жадность':'brain',
+ 'защита от недоброжелателей':'shield',
+ 'вебинар «страхи. тревоги. стресс»':'heart-pulse',
+ 'род':'git-branch',
+ 'душа женщины':'flower-2',
+ 'эгрегоры':'network',
+ 'ангелы-кураторы':'feather',
+ 'школа':'graduation-cap',
+ 'голос души':'audio-lines',
+ 'права доступа':'key-round',
+ 'карма':'orbit',
+ 'законы':'scale',
+ 'знаки':'asterisk',
+ 'тело для духовного существа':'accessibility',
+ 'справляться с будущим':'sunrise',
+ 'как просить, чтобы было дано':'hand-heart',
+ 'доверие вселенной':'stars',
+ 'энергообмен':'repeat-2',
+ 'другая ветка реальности':'git-fork'
+};
+const symbolFor=title=>topicSymbols[String(title).trim().toLowerCase()]||'sparkles';
 let items=[],purchased=new Set(),filter=filters[0],frame;
 const demoProvider=provider;
 const sdk=window.notibot;
@@ -47,7 +70,7 @@ function render(){
  const visible=selectEpisodes(items,filter,purchased);
  $('#episode-filter').value=filter;
  $('#count').textContent=`Показано ${visible.length} из ${items.length} · Доступно ${items.filter(e=>available(e,purchased)).length}`;
- $('#om-screen').innerHTML=visible.length?`<div class="constellation" aria-label="Дерево эфиров"><svg class="constellation-links" aria-hidden="true"></svg>${visible.map(e=>{const open=available(e,purchased),status=e.is_free?'Бесплатный':open?(embedded?'Куплен':'Куплен · демо'):(embedded&&accessState!=='ready'?'Проверяем доступ':'Не куплен');return `<a class="orbit-node ${open?'purchased':'locked'}" data-order="${e.order}" style="--topic:${colors[(e.order-1)%colors.length]}" href="${escape(destination(e,purchased,embedded))}" aria-label="${escape(e.title)} — ${status}" title="${escape(e.description)}"><span class="orbit-disc"><i data-lucide="${symbols[(e.order-1)%symbols.length]}" aria-hidden="true"></i>${!e.is_free&&purchased.has(e.order)?'<span class="owned-mark" aria-hidden="true">✓</span>':''}</span><span class="orbit-title">${escape(e.title)}</span></a>`;}).join('')}</div>`:'<p class="empty">Здесь пока нет эфиров. Выберите другой фильтр.</p>';
+ $('#om-screen').innerHTML=visible.length?`<div class="constellation" aria-label="Дерево эфиров"><svg class="constellation-links" aria-hidden="true"></svg>${visible.map(e=>{const open=available(e,purchased),status=e.is_free?'Бесплатный':open?(embedded?'Куплен':'Куплен · демо'):(embedded&&accessState!=='ready'?'Проверяем доступ':'Не куплен');return `<a class="orbit-node ${open?'purchased':'locked'}" data-order="${e.order}" style="--topic:${colors[(e.order-1)%colors.length]}" href="${escape(destination(e,purchased,embedded))}" aria-label="${escape(e.title)} — ${status}" title="${escape(e.description)}"><span class="orbit-disc"><i data-lucide="${symbolFor(e.title)}" aria-hidden="true"></i>${!e.is_free&&purchased.has(e.order)?'<span class="owned-mark" aria-hidden="true">✓</span>':''}</span><span class="orbit-title">${escape(e.title)}</span></a>`;}).join('')}</div>`:'<p class="empty">Здесь пока нет эфиров. Выберите другой фильтр.</p>';
  globalThis.lucide?.createIcons();
  schedule();
 }
