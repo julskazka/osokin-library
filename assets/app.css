@@ -61,3 +61,14 @@
 #osokin-mvp .support-button:hover,#osokin-mvp .support-button:focus-visible{filter:brightness(1.15);transform:translateY(-1px)}
 #osokin-mvp .support-button span{font-size:18px;line-height:1}
 @media(max-width:420px){#osokin-mvp .support-action{margin:12px 0 22px;padding:0 4px}#osokin-mvp .support-button{min-height:46px;font-size:13px}}
+
+/* Compact introduction under cover, especially in Telegram mobile webview */
+#osokin-mvp .library-intro{padding:13px 15px 12px;margin:4px 0 13px;border-radius:16px}
+#osokin-mvp .library-intro h2{margin:0 0 5px;font-size:18px;line-height:1.2}
+#osokin-mvp .library-intro p{margin:0 0 9px;font-size:12px;line-height:1.4}
+#osokin-mvp .library-hints{gap:5px}
+#osokin-mvp .library-hints>div{gap:9px;font-size:11px;line-height:1.35}
+#osokin-mvp .library-hints .hint-crystal{width:21px;height:21px}
+#osokin-mvp .library-hints .hint-crystal::before{font-size:13px}
+#osokin-mvp .filter-row{margin-top:0}
+@media(max-width:420px){#osokin-mvp .library-intro{padding:12px 13px 11px;margin:2px 0 12px}#osokin-mvp .library-intro h2{font-size:17px}#osokin-mvp .library-intro p{font-size:12px;margin-bottom:8px}#osokin-mvp .library-hints>div{font-size:11px;gap:8px}}
