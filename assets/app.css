@@ -75,3 +75,18 @@
 
 /* Larger, legible feathered wings inside the existing angel crystal */
 #osokin-mvp .orbit-disc svg.crystal-wings{width:min(29px,83%)!important;height:min(27px,79%)!important;stroke-width:1.45;flex-shrink:0}
+
+/* Compact collection progress between the filter and crystal legend */
+#osokin-mvp .library-progress{margin:4px 0 13px;padding:12px 14px 11px;border:1px solid #393958;border-radius:15px;background:linear-gradient(115deg,#1b1b3b,#12162f);box-shadow:inset 0 1px 0 #ffffff08}
+#osokin-mvp .library-progress-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 9px;color:#e8ddff}
+#osokin-mvp .library-progress-title{font-size:12px;font-weight:600;letter-spacing:.15px}
+#osokin-mvp #library-progress-value{font-size:16px;line-height:1;color:#e9d4ff;font-variant-numeric:tabular-nums;text-shadow:0 0 10px #a78bdd66}
+#osokin-mvp .library-progress-track{height:9px;border:1px solid #575376;background:#0a0e27;border-radius:100px;overflow:hidden;box-shadow:inset 0 1px 5px #0007}
+#osokin-mvp .library-progress-fill{display:block;height:100%;width:0;border-radius:100px;background:linear-gradient(90deg,#745cbb,#c9a7ff 75%,#f1d4fa);box-shadow:0 0 12px #c4a1ff88;transition:width .45s ease}
+#osokin-mvp .library-progress-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:6px;color:#999bbd;font-size:10px;font-variant-numeric:tabular-nums}
+#osokin-mvp #library-progress-detail{color:#c3b6e4;text-align:center}
+#osokin-mvp .orbit-disc svg.crystal-pyramid-eye{width:min(28px,88%)!important;height:min(28px,88%)!important;stroke-width:1.7}
+#osokin-mvp .orbit-disc svg.crystal-person{width:min(25px,80%)!important;height:min(25px,80%)!important;stroke-width:2.5}
+#osokin-mvp .orbit-disc svg.crystal-up-arrow{width:min(25px,80%)!important;height:min(25px,80%)!important;stroke-width:3.5}
+#osokin-mvp .orbit-disc svg.crystal-coins{width:min(27px,86%)!important;height:min(27px,86%)!important;stroke-width:1.5}
+@media(max-width:420px){#osokin-mvp .library-progress{padding:10px 12px;margin:3px 0 11px}}
