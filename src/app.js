@@ -10,24 +10,35 @@ const topicSymbols={
  'ум: жадность':'brain',
  'защита от недоброжелателей':'shield',
  'вебинар «страхи. тревоги. стресс»':'heart-pulse',
- 'род':'tree-pine',
+ 'род':'network',
  'душа женщины':'flower-2',
- 'эгрегоры':'network',
- 'ангелы-кураторы':'feather',
- 'школа':'graduation-cap',
+ 'эгрегоры':'ban',
+ 'ангелы-кураторы':'custom-wings',
+ 'школа':'school',
  'голос души':'audio-lines',
  'права доступа':'key-round',
- 'карма':'orbit',
+ 'карма':'rotate-ccw',
  'законы':'scale',
- 'знаки':'asterisk',
+ 'знаки':'orbit',
  'тело для духовного существа':'person-standing',
- 'справляться с будущим':'sunrise',
+ 'справляться с будущим':'biceps-flexed',
  'как просить, чтобы было дано':'hand-heart',
- 'доверие вселенной':'stars',
+ 'доверие вселенной':'heart-handshake',
  'энергообмен':'repeat-2',
- 'другая ветка реальности':'git-fork'
+ 'другая ветка реальности':'git-fork',
+ 'места силы (единый канал)':'mountain',
+ 'места силы (по городам)':'map-pin',
+ 'школа. реальность':'school',
+ 'справляться с будущим, часть 1':'biceps-flexed',
+ 'нет проблем':'sun'
 };
 const symbolFor=title=>topicSymbols[String(title).trim().toLowerCase()]||'sparkles';
+// Thin mirrored wing outlines, matching the existing Lucide crystal linework.
+const crystalIcon=title=>{
+ const symbol=symbolFor(title);
+ if(symbol==='custom-wings')return '<svg class="crystal-wings" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 17.5c-2.6-3.8-5.3-3.7-8.8-8.9 3.9 1.5 5.2.3 7.4-3.2.6 3.6 1.2 6.3 1.4 12.1Z"/><path d="M12 17.5c2.6-3.8 5.3-3.7 8.8-8.9-3.9 1.5-5.2.3-7.4-3.2-.6 3.6-1.2 6.3-1.4 12.1Z"/><path d="M5.3 9.4c2.4 1.9 4.4 3.8 6.7 8.1M18.7 9.4c-2.4 1.9-4.4 3.8-6.7 8.1"/></svg>';
+ return `<i data-lucide="${symbol}" aria-hidden="true"></i>`;
+};
 let items=[],purchased=new Set(),filter=filters[0],frame;
 const demoProvider=provider;
 const sdk=window.notibot;
@@ -70,7 +81,7 @@ function render(){
  const visible=selectEpisodes(items,filter,purchased);
  $('#episode-filter').value=filter;
  $('#count').textContent=`Показано ${visible.length} из ${items.length} · Доступно ${items.filter(e=>available(e,purchased)).length}`;
- $('#om-screen').innerHTML=visible.length?`<div class="constellation" aria-label="Дерево эфиров"><svg class="constellation-links" aria-hidden="true"></svg>${visible.map(e=>{const open=available(e,purchased),status=e.is_free?'Бесплатный':open?(embedded?'Куплен':'Куплен · демо'):(embedded&&accessState!=='ready'?'Проверяем доступ':'Не куплен');return `<a class="orbit-node ${open?'purchased':'locked'}" data-order="${e.order}" style="--topic:${colors[(e.order-1)%colors.length]}" href="${escape(destination(e,purchased,embedded))}" aria-label="${escape(e.title)} — ${status}" title="${escape(e.description)}"><span class="orbit-disc"><i data-lucide="${symbolFor(e.title)}" aria-hidden="true"></i>${!e.is_free&&purchased.has(e.order)?'<span class="owned-mark" aria-hidden="true">✓</span>':''}</span><span class="orbit-title">${escape(e.title)}</span></a>`;}).join('')}</div>`:'<p class="empty">Здесь пока нет эфиров. Выберите другой фильтр.</p>';
+ $('#om-screen').innerHTML=visible.length?`<div class="constellation" aria-label="Дерево эфиров"><svg class="constellation-links" aria-hidden="true"></svg>${visible.map(e=>{const open=available(e,purchased),status=e.is_free?'Бесплатный':open?(embedded?'Куплен':'Куплен · демо'):(embedded&&accessState!=='ready'?'Проверяем доступ':'Не куплен');return `<a class="orbit-node ${open?'purchased':'locked'}" data-order="${e.order}" style="--topic:${colors[(e.order-1)%colors.length]}" href="${escape(destination(e,purchased,embedded))}" aria-label="${escape(e.title)} — ${status}" title="${escape(e.description)}"><span class="orbit-disc">${crystalIcon(e.title)}${!e.is_free&&purchased.has(e.order)?'<span class="owned-mark" aria-hidden="true">✓</span>':''}</span><span class="orbit-title">${escape(e.title)}</span></a>`;}).join('')}</div>`:'<p class="empty">Здесь пока нет эфиров. Выберите другой фильтр.</p>';
  globalThis.lucide?.createIcons();
  schedule();
 }
