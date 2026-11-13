@@ -245,3 +245,37 @@
   font-size:clamp(10px,2.6vw,11.5px)!important;
   line-height:1.4!important;
 }
+
+/* Mobile-first unified type and whole-word crystal captions.
+   Earlier styles enabled automatic Russian syllable hyphenation; disable it consistently. */
+#osokin-mvp,
+#osokin-mvp *:not(svg):not(path):not(line):not(circle):not(ellipse):not(rect):not(polyline):not(polygon){
+  font-family:"Manrope","Segoe UI",Arial,sans-serif!important;
+}
+#osokin-mvp .constellation .orbit-title,
+#osokin-mvp .constellation .orbit-node[data-order="4"] .orbit-title{
+  -webkit-hyphens:none!important;
+  -ms-hyphens:none!important;
+  hyphens:none!important;
+  word-break:normal!important;
+  overflow-wrap:normal!important;
+  white-space:normal!important;
+  text-wrap:balance!important;
+  text-align:center!important;
+  width:max-content!important;
+  max-width:100%!important;
+  margin-inline:auto!important;
+  letter-spacing:-.02em!important;
+}
+@media(max-width:600px){
+  #osokin-mvp .constellation .orbit-title,
+  #osokin-mvp .constellation .orbit-node[data-order="4"] .orbit-title{
+    font-size:clamp(10px,2.75vw,12px)!important;
+    line-height:1.38!important;
+    padding:4px 5px!important;
+  }
+  #osokin-mvp .constellation .orbit-node[data-order="3"] .orbit-title{
+    font-size:clamp(9.8px,2.55vw,11.6px)!important;
+    letter-spacing:-.035em!important;
+  }
+}
