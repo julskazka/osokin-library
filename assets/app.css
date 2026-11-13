@@ -172,3 +172,7 @@
  #osokin-mvp .orbit-title{font-size:11.5px;max-width:132px;padding:3px 5px;line-height:1.3}
  #osokin-mvp .orbit-node[data-order="4"] .orbit-title{max-width:136px;font-size:11px}
 }
+
+/* New supplied 16:9 Information About You cover, fully visible */
+#osokin-mvp .hero.new-cover{background:#0a0e27!important;overflow:hidden}
+#osokin-mvp .new-cover-image{width:100%!important;max-width:100%!important;height:auto!important;aspect-ratio:1672/941;object-fit:contain!important;object-position:center!important;display:block!important;margin:0!important}
