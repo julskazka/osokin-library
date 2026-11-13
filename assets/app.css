@@ -232,3 +232,16 @@
  #osokin-mvp .constellation .orbit-node{gap:5px!important}
  #osokin-mvp .constellation .orbit-title{padding:3px 4px!important;font-size:10.4px!important}
 }
+
+/* Balanced centered three-line title for the fears/stress crystal */
+#osokin-mvp .constellation .orbit-node[data-order="4"] .orbit-title{
+  display:block!important;
+  width:100%!important;
+  max-width:138px!important;
+  margin:0 auto!important;
+  align-self:center!important;
+  text-align:center!important;
+  text-wrap:balance!important;
+  font-size:clamp(10px,2.6vw,11.5px)!important;
+  line-height:1.4!important;
+}
