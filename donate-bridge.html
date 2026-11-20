@@ -110,6 +110,25 @@
       border: 0 !important;
       background: #fff;
     }
+    .inline-pay {
+      display: block;
+      width: 100%;
+      min-height: 50px;
+      margin: 16px 0 0;
+      padding: 12px 16px;
+      border: 1px solid rgba(224,208,255,.60);
+      border-radius: 12px;
+      color: #241D43;
+      background: #E3D1FF;
+      font: 700 16px/1.3 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      cursor: pointer;
+    }
+    .inline-pay:focus-visible { outline: 3px solid #F6EFD9; outline-offset: 3px; }
+    .inline-pay[disabled] { opacity:.5; cursor:not-allowed; }
+    .inline-hint {
+      margin: 9px 0 0; color: #CECBE7; font-size: 13px; line-height: 1.45; text-align: center;
+    }
+    .inline-status { margin: 8px 0 0; color:#E9D6FF; font-size: 13px; text-align:center; }
     .note {
       max-width: 430px;
       margin: 19px auto 0;
@@ -149,6 +168,9 @@
         </div>
       </div>
     </div>
+    <button class="inline-pay" id="inline-payment" type="button">Открыть оплату в этом окне</button>
+    <p class="inline-hint">Если кнопка Robokassa выше не реагирует внутри Notibot, попробуйте эту.</p>
+    <p id="inline-status" class="inline-status" role="status" aria-live="polite" hidden></p>
     <p class="note">Сумму можно изменить. Добровольная поддержка не даёт платного доступа к материалам и не является покупкой услуги.</p>
   </section>
 </main>
@@ -168,6 +190,33 @@
     widget.style.left = Math.max(0, (available - BASE_WIDTH * scale) / 2) + 'px';
     viewport.style.height = Math.ceil(BASE_HEIGHT * scale) + 'px';
   }
+  // A same-frame fallback for embedded clients that block popups from cross-origin widgets.
+  // The URL is taken from Robokassa's own iframe, never assembled from or signed with secrets.
+  var inlineBtn = document.getElementById('inline-payment');
+  var inlineStatus = document.getElementById('inline-status');
+  inlineBtn.addEventListener('click', function () {
+    var frame = widget.querySelector('iframe[src]');
+    if (!frame) {
+      inlineStatus.hidden = false;
+      inlineStatus.textContent = 'Форма Robokassa ещё не загрузилась. Обновите страницу и повторите.';
+      return;
+    }
+    try {
+      var u = new URL(frame.getAttribute('src'), window.location.href);
+      if (u.protocol !== 'https:' || u.hostname !== 'auth.robokassa.ru' ||
+          !/^\\/Merchant\\/PaymentForm\\//i.test(u.pathname)) {
+        inlineStatus.hidden = false;
+        inlineStatus.textContent = 'Виджет вернул неподдерживаемый адрес формы. Переход отменён.';
+        return;
+      }
+      inlineStatus.hidden = false;
+      inlineStatus.textContent = 'Открываем форму Robokassa в текущем окне…';
+      window.location.assign(u.href);
+    } catch (e) {
+      inlineStatus.hidden = false;
+      inlineStatus.textContent = 'Не удалось открыть форму Robokassa.';
+    }
+  });
   fitWidget();
   window.addEventListener('load', fitWidget);
   window.addEventListener('resize', fitWidget, {passive: true});
