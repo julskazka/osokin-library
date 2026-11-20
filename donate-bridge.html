@@ -204,7 +204,7 @@
     try {
       var u = new URL(frame.getAttribute('src'), window.location.href);
       if (u.protocol !== 'https:' || u.hostname !== 'auth.robokassa.ru' ||
-          !/^\\/Merchant\\/PaymentForm\\//i.test(u.pathname)) {
+          !u.pathname.toLowerCase().startsWith('/merchant/paymentform/')) {
         inlineStatus.hidden = false;
         inlineStatus.textContent = 'Виджет вернул неподдерживаемый адрес формы. Переход отменён.';
         return;
