@@ -2,150 +2,44 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#0A0E27">
-  <meta name="color-scheme" content="dark">
-  <meta name="description" content="Добровольная поддержка проекта «Информация про вас» Виталия Осокина">
+  <meta name="description" content="Поддержать проект «Информация про вас» — Виталий Осокин">
   <title>Поддержать проект — Информация про вас</title>
-  <script src="assets/donate-notibot-bridge.js" defer></script>
   <style>
-    :root {
-      --bg: #0A0E27;
-      --text: #F9F8FF;
-      --muted: #CAC9E0;
-      --stroke: rgba(210,198,255,.19);
-      --gold: #EDD5A8;
-    }
-    * { box-sizing: border-box; }
-    html { min-height: 100%; background: var(--bg); -webkit-text-size-adjust: 100%; }
+    :root { color-scheme: dark; --bg:#0A0E27; --text:#F9F8FF; --muted:#CAC9E0; --stroke:rgba(210,198,255,.19); --gold:#EDD5A8; }
+    * { box-sizing:border-box; }
+    html { min-height:100%; background:var(--bg); -webkit-text-size-adjust:100%; }
     body {
-      margin: 0;
-      min-height: 100svh;
-      color: var(--text);
-      background: radial-gradient(ellipse 85% 40% at 50% -10%,rgba(100,87,218,.30),transparent 85%),
-                  radial-gradient(ellipse 76% 38% at 84% 65%,rgba(78,49,146,.22),transparent 75%),
-                  var(--bg);
-      font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-      overflow-x: hidden;
+      margin:0; min-height:100svh; color:var(--text);
+      font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      background:radial-gradient(ellipse 85% 40% at 50% -10%,rgba(100,87,218,.3),transparent 85%),
+                 radial-gradient(ellipse 76% 38% at 84% 65%,rgba(78,49,146,.22),transparent 75%),var(--bg);
     }
-    body::before {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      content: "";
-      opacity: .32;
-      background-image: radial-gradient(circle, rgba(251,245,255,.82) .75px, transparent 1px);
-      background-size: 59px 73px;
-      background-position: 12px 8px;
-    }
-    main {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      max-width: 620px;
-      margin: 0 auto;
-      padding: max(30px, env(safe-area-inset-top)) 16px max(38px, env(safe-area-inset-bottom));
-    }
-    .intro { text-align: center; margin: 0 auto 28px; max-width: 520px; }
-    .eyebrow {
-      display: inline-block;
-      margin-bottom: 14px;
-      color: var(--gold);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-    }
-    h1 {
-      font: 700 clamp(29px,8vw,43px)/1.12 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
-      letter-spacing: -.035em;
-      margin: 0 0 14px;
-    }
-    .intro p {
-      color: var(--muted);
-      font-size: clamp(15px,3.6vw,17px);
-      line-height: 1.58;
-      margin: 0 auto;
-    }
+    main { max-width:620px; margin:auto; padding:30px 14px 40px; }
+    .intro { text-align:center; margin:0 auto 26px; }
+    .eyebrow { color:var(--gold); font-size:11px; font-weight:700; letter-spacing:.13em; text-transform:uppercase; }
+    h1 { font-size:clamp(29px,8vw,43px); line-height:1.12; letter-spacing:-.035em; margin:14px 0 14px; }
+    .intro p { color:var(--muted); font-size:clamp(15px,3.6vw,17px); margin:0; }
     .panel {
-      border: 1px solid var(--stroke);
-      border-radius: 24px;
-      padding: 24px 18px;
-      background: linear-gradient(160deg,rgba(33,35,78,.88),rgba(18,21,53,.94));
-      box-shadow: 0 20px 50px rgba(0,0,0,.20), inset 0 1px rgba(255,255,255,.07);
+      padding:24px 18px; border:1px solid var(--stroke); border-radius:24px;
+      background:linear-gradient(160deg,rgba(33,35,78,.88),rgba(18,21,53,.94));
+      box-shadow:0 20px 50px rgba(0,0,0,.2);
     }
-    .panel-head { text-align:center; margin-bottom: 18px; }
-    .panel-head strong { color: #fff; font-size: 19px; line-height: 1.32; }
-    .panel-head p { color: var(--muted); font-size: 14px; margin: 6px 0 0; }
+    .panel-head { text-align:center; margin-bottom:18px; }
+    .panel-head strong { display:block; color:white; font-size:19px; }
+    .panel-head p { margin:6px 0 0; color:var(--muted); font-size:14px; }
     .pay-shell {
-      padding: 14px 12px;
-      border-radius: 15px;
-      background: #fff;
-      box-shadow: inset 0 0 0 1px rgba(17,19,38,.08);
-      overflow: hidden;
+      background:#fff; border-radius:15px; padding:16px 12px;
+      min-height:106px; text-align:center;
     }
-    .pay-viewport {
-      position: relative;
-      width: 100%;
-      height: 88px;
-      overflow: hidden;
-    }
-    .pay-widget {
-      position: absolute;
-      width: 480px;
-      min-width: 480px;
-      height: 88px;
-      top: 0;
-      left: 0;
-      transform-origin: top left;
-    }
-    .pay-widget iframe {
-      display: block !important;
-      width: 480px !important;
-      min-width: 480px !important;
-      max-width: none !important;
-      height: 88px !important;
-      min-height: 88px !important;
-      border: 0 !important;
-      background: #fff;
-    }
-    .inline-pay {
-      display: block;
-      width: 100%;
-      min-height: 50px;
-      margin: 16px 0 0;
-      padding: 12px 16px;
-      border: 1px solid rgba(224,208,255,.60);
-      border-radius: 12px;
-      color: #241D43;
-      background: #E3D1FF;
-      font: 700 16px/1.3 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
-      cursor: pointer;
-    }
-    .inline-pay:focus-visible { outline: 3px solid #F6EFD9; outline-offset: 3px; }
-    .inline-pay[disabled] { opacity:.5; cursor:not-allowed; }
-    .inline-hint {
-      margin: 9px 0 0; color: #CECBE7; font-size: 13px; line-height: 1.45; text-align: center;
-    }
-    .inline-status { margin: 8px 0 0; color:#E9D6FF; font-size: 13px; text-align:center; }
-    .note {
-      max-width: 430px;
-      margin: 19px auto 0;
-      color: var(--muted);
-      text-align: center;
-      font-size: 13px;
-      line-height: 1.55;
-    }
-    @media (min-width: 520px) {
-      main { padding-top: 45px; }
-      .panel { padding: 28px 28px 30px; }
-      .pay-shell { padding: 16px 18px; }
-    }
-    @media (max-width: 380px) {
-      main { padding-left: 10px; padding-right: 10px; }
-      .panel { padding: 22px 10px; border-radius: 20px; }
-      .pay-shell { padding: 12px 6px; }
+    /* ВАЖНО: размеры, поведение, iframe и кнопки полностью контролирует Robokassa.
+       Никаких transform, fixed width, overflow:hidden или подмены кликов. */
+    .note { max-width:430px; margin:19px auto 0; color:var(--muted); font-size:13px; text-align:center; }
+    @media (max-width:380px) {
+      main { padding:26px 10px 34px; }
+      .panel { padding:20px 10px; border-radius:20px; }
+      .pay-shell { padding:12px 6px; }
     }
   </style>
 </head>
@@ -162,68 +56,10 @@
       <p>Укажите сумму и нажмите «Оплатить»</p>
     </div>
     <div class="pay-shell">
-      <div class="pay-viewport" id="pay-viewport">
-        <div class="pay-widget" id="pay-widget">
-          <script type="text/javascript" src="https://auth.robokassa.ru/Merchant/PaymentForm/FormFLS.js?EncodedInvoiceId=oE9FcryKQk-Q-KgHEJ5psg&amp;DefaultSum=500"></script>
-        </div>
-      </div>
+      <script type="text/javascript" src="https://auth.robokassa.ru/Merchant/PaymentForm/FormFLS.js?EncodedInvoiceId=oE9FcryKQk-Q-KgHEJ5psg&amp;DefaultSum=500"></script>
     </div>
-    <button class="inline-pay" id="inline-payment" type="button">Открыть оплату в этом окне</button>
-    <p class="inline-hint">Если кнопка Robokassa выше не реагирует внутри Notibot, попробуйте эту.</p>
-    <p id="inline-status" class="inline-status" role="status" aria-live="polite" hidden></p>
     <p class="note">Сумму можно изменить. Добровольная поддержка не даёт платного доступа к материалам и не является покупкой услуги.</p>
   </section>
 </main>
-<script>
-(function () {
-  'use strict';
-  var viewport = document.getElementById('pay-viewport');
-  var widget = document.getElementById('pay-widget');
-  if (!viewport || !widget) return;
-  var BASE_WIDTH = 480;
-  var BASE_HEIGHT = 88;
-  function fitWidget() {
-    var available = viewport.clientWidth;
-    if (!available) return;
-    var scale = Math.min(1, available / BASE_WIDTH);
-    widget.style.transform = 'scale(' + scale + ')';
-    widget.style.left = Math.max(0, (available - BASE_WIDTH * scale) / 2) + 'px';
-    viewport.style.height = Math.ceil(BASE_HEIGHT * scale) + 'px';
-  }
-  // A same-frame fallback for embedded clients that block popups from cross-origin widgets.
-  // The URL is taken from Robokassa's own iframe, never assembled from or signed with secrets.
-  var inlineBtn = document.getElementById('inline-payment');
-  var inlineStatus = document.getElementById('inline-status');
-  inlineBtn.addEventListener('click', function () {
-    var frame = widget.querySelector('iframe[src]');
-    if (!frame) {
-      inlineStatus.hidden = false;
-      inlineStatus.textContent = 'Форма Robokassa ещё не загрузилась. Обновите страницу и повторите.';
-      return;
-    }
-    try {
-      var u = new URL(frame.getAttribute('src'), window.location.href);
-      if (u.protocol !== 'https:' || u.hostname !== 'auth.robokassa.ru' ||
-          !u.pathname.toLowerCase().startsWith('/merchant/paymentform/')) {
-        inlineStatus.hidden = false;
-        inlineStatus.textContent = 'Виджет вернул неподдерживаемый адрес формы. Переход отменён.';
-        return;
-      }
-      inlineStatus.hidden = false;
-      inlineStatus.textContent = 'Открываем форму Robokassa в текущем окне…';
-      window.location.assign(u.href);
-    } catch (e) {
-      inlineStatus.hidden = false;
-      inlineStatus.textContent = 'Не удалось открыть форму Robokassa.';
-    }
-  });
-  fitWidget();
-  window.addEventListener('load', fitWidget);
-  window.addEventListener('resize', fitWidget, {passive: true});
-  if ('ResizeObserver' in window) {
-    new ResizeObserver(fitWidget).observe(viewport);
-  }
-})();
-</script>
 </body>
 </html>
