@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0A0E27">
+  <title>Проверка оплаты — Информация про вас</title>
+  <style>
+    :root { color-scheme: dark; --bg:#0A0E27; --ink:#F8F6FF; --sub:#CDC9E6; --border:rgba(217,207,255,.25); --accent:#D9C5FF; }
+    * { box-sizing:border-box }
+    body { margin:0; min-height:100svh; background:
+      radial-gradient(ellipse 90% 38% at 50% 0%,rgba(112,84,218,.25),transparent),
+      var(--bg); color:var(--ink); font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif; }
+    main { max-width:560px; margin:auto; padding:36px 16px 48px; }
+    .overline { color:#E5CFAC; text-transform:uppercase; letter-spacing:.16em; text-align:center; font-size:11px; font-weight:700; }
+    h1 { font-size:clamp(28px,7vw,38px); line-height:1.15; text-align:center; margin:10px 0 12px; }
+    .lead { margin:0 auto 24px; text-align:center; max-width:430px; color:var(--sub); }
+    .card { background:linear-gradient(145deg,#22244F,#141A3F); border:1px solid var(--border); border-radius:22px; padding:24px 18px; box-shadow:0 16px 45px rgba(0,0,0,.2); }
+    label { font-size:15px; font-weight:700; display:block; margin-bottom:10px; }
+    input { width:100%; min-height:52px; font:16px/1.35 inherit; padding:13px; border:1px solid #7C74AD; border-radius:12px; background:#111832; color:#fff; outline:none; }
+    input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(217,197,255,.16); }
+    button { display:block; margin-top:14px; width:100%; min-height:54px; padding:14px 16px; background:var(--accent); color:#191435; font:700 17px/1.2 inherit; border:0; border-radius:13px; cursor:pointer; }
+    button:focus-visible { outline:3px solid #fff; outline-offset:3px; }
+    button:disabled { opacity:.65; cursor:not-allowed; }
+    small,.hint { display:block; color:var(--sub); font-size:13px; margin:10px 0 0; line-height:1.5; }
+    .status { border:1px solid var(--border); border-radius:12px; margin:18px 0 0; padding:12px 14px; color:var(--sub); font-size:13px; }
+    .status strong { color:#fff; }
+    .fallback { display:none; margin:13px 0 0; color:#E6D6FF; text-align:center; font-size:14px; text-decoration:underline; text-underline-offset:4px; }
+    .footer-note { margin-top:18px; font-size:13px; color:var(--sub); text-align:center; }
+    @media (max-width:390px) { main { padding:26px 12px 36px } .card { padding:20px 14px } }
+  </style>
+  <script src="assets/donate-notibot-bridge.js"></script>
+</head>
+<body>
+<main>
+  <div class="overline">Информация про вас · Виталий Осокин</div>
+  <h1>Поддержать проект</h1>
+  <p class="lead">Проверяем открытие оплаты Robokassa через встроенный переход Notibot, без стороннего виджета.</p>
+  <section class="card" aria-label="Проверка платёжной ссылки">
+    <label for="payment-url">Ссылка на страницу оплаты Robokassa</label>
+    <input id="payment-url" type="url" placeholder="https://…robokassa.ru/…" inputmode="url" autocomplete="off" spellcheck="false">
+    <small>Нужна именно ссылка из варианта «Страница с вводом суммы» в Robokassa, а не код <code>FormFLS.js</code>.</small>
+    <button id="go" type="button">Открыть оплату</button>
+    <a id="fallback" class="fallback" target="_blank" rel="noopener noreferrer">Проверить прямой переход без bridge</a>
+    <p id="status" class="status" role="status" aria-live="polite"><strong>Notibot:</strong> определяем подключение…</p>
+  </section>
+  <p class="footer-note">Тестовая страница. Она не принимает деньги сама, а открывает защищённую страницу Robokassa.</p>
+</main>
+<script>
+(function () {
+  'use strict';
+  var field=document.getElementById('payment-url');
+  var button=document.getElementById('go');
+  var status=document.getElementById('status');
+  var fallback=document.getElementById('fallback');
+  var storageKey='osokin-donation-payurl-v1';
+
+  function validUrl(raw) {
+    try {
+      var u=new URL(raw);
+      if (u.protocol!=='https:') return null;
+      var host=u.hostname.toLowerCase();
+      if (host==='robokassa.ru'||host.endsWith('.robokassa.ru')||
+          host==='robokassa.com'||host.endsWith('.robokassa.com')) return u.href;
+    } catch (_) {}
+    return null;
+  }
+  function show(message) { status.textContent=message; }
+  function save(url) { try { localStorage.setItem(storageKey,url); } catch (_) {} }
+  try {
+    var saved=localStorage.getItem(storageKey);
+    if(validUrl(saved)) field.value=saved;
+  } catch (_) {}
+
+  function refreshState() {
+    var bridge=window.NotibotIntegration;
+    var state=bridge&&bridge.getState&&bridge.getState();
+    if(state&&state.connected) show('Notibot подключён. Переход будет отправлен через bridge.');
+    else if(window.parent!==window) show('Страница встроена. Ожидаем ответ от Notibot; при отсутствии подключения будет использован обычный переход.');
+    else show('Открыто в браузере. При нажатии произойдёт обычный переход.');
+  }
+  if(window.NotibotIntegration&&window.NotibotIntegration.onUpdate)
+    window.NotibotIntegration.onUpdate(refreshState);
+  refreshState();
+
+  field.addEventListener('input',function(){
+    var url=validUrl(field.value.trim());
+    fallback.style.display=url?'block':'none';
+    if(url) fallback.href=url;
+    else fallback.removeAttribute('href');
+  });
+  field.dispatchEvent(new Event('input'));
+
+  button.addEventListener('click',function(){
+    var url=validUrl(field.value.trim());
+    if(!url) {
+      show('Вставьте прямую HTTPS-ссылку Robokassa из кабинета, не JavaScript-код виджета.');
+      field.focus(); return;
+    }
+    save(url);
+    fallback.href=url;
+    fallback.style.display='block';
+    var bridge=window.NotibotIntegration;
+    var state=bridge&&bridge.getState&&bridge.getState();
+    try {
+      if(state&&state.connected&&typeof bridge.openLink==='function') {
+        bridge.openLink(url);
+        show('Команда открытия оплаты отправлена в Notibot. Если ничего не произошло, проверьте прямой переход ниже.');
+        return;
+      }
+      if(window.Telegram&&window.Telegram.WebApp&&typeof window.Telegram.WebApp.openLink==='function') {
+        window.Telegram.WebApp.openLink(url);
+        show('Команда открытия оплаты отправлена в Telegram.');
+        return;
+      }
+      show('Встроенный мост не подключён — открываем Robokassa обычным переходом.');
+      window.location.assign(url);
+    } catch (error) {
+      show('Не удалось открыть оплату через bridge. Проверьте прямой переход ниже.');
+    }
+  });
+})();
+</script>
+</body>
+</html>
