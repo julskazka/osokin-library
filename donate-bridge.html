@@ -4,40 +4,34 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#0A0E27">
-  <meta name="description" content="Поддержать проект «Информация про вас» — Виталий Осокин">
+  <meta name="description" content="Добровольная поддержка проекта Виталия Осокина">
   <title>Поддержать проект — Информация про вас</title>
   <style>
-    :root { color-scheme: dark; --bg:#0A0E27; --text:#F9F8FF; --muted:#CAC9E0; --stroke:rgba(210,198,255,.19); --gold:#EDD5A8; }
+    :root { --bg:#0A0E27; --text:#F9F8FF; --muted:#CAC9E0; --stroke:rgba(210,198,255,.2); --gold:#EDD5A8; }
     * { box-sizing:border-box; }
     html { min-height:100%; background:var(--bg); -webkit-text-size-adjust:100%; }
-    body {
-      margin:0; min-height:100svh; color:var(--text);
+    body { margin:0; min-height:100svh; color:var(--text);
       font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
       background:radial-gradient(ellipse 85% 40% at 50% -10%,rgba(100,87,218,.3),transparent 85%),
-                 radial-gradient(ellipse 76% 38% at 84% 65%,rgba(78,49,146,.22),transparent 75%),var(--bg);
-    }
-    main { max-width:620px; margin:auto; padding:30px 14px 40px; }
-    .intro { text-align:center; margin:0 auto 26px; }
+        radial-gradient(ellipse 76% 38% at 84% 65%,rgba(78,49,146,.22),transparent 75%),var(--bg); }
+    main { max-width:620px; margin:auto; padding:max(30px,env(safe-area-inset-top)) 14px max(40px,env(safe-area-inset-bottom)); }
+    .intro { margin:0 auto 26px; text-align:center; }
     .eyebrow { color:var(--gold); font-size:11px; font-weight:700; letter-spacing:.13em; text-transform:uppercase; }
-    h1 { font-size:clamp(29px,8vw,43px); line-height:1.12; letter-spacing:-.035em; margin:14px 0 14px; }
+    h1 { font-size:clamp(29px,8vw,43px); line-height:1.12; letter-spacing:-.035em; margin:14px 0; }
     .intro p { color:var(--muted); font-size:clamp(15px,3.6vw,17px); margin:0; }
-    .panel {
-      padding:24px 18px; border:1px solid var(--stroke); border-radius:24px;
+    .panel { padding:24px 18px; border:1px solid var(--stroke); border-radius:24px;
       background:linear-gradient(160deg,rgba(33,35,78,.88),rgba(18,21,53,.94));
-      box-shadow:0 20px 50px rgba(0,0,0,.2);
-    }
-    .panel-head { text-align:center; margin-bottom:18px; }
+      box-shadow:0 20px 50px rgba(0,0,0,.2); }
+    .panel-head { margin-bottom:18px; text-align:center; }
     .panel-head strong { display:block; color:white; font-size:19px; }
     .panel-head p { margin:6px 0 0; color:var(--muted); font-size:14px; }
-    .pay-shell {
-      background:#fff; border-radius:15px; padding:16px 12px;
-      min-height:106px; text-align:center;
-    }
-    /* ВАЖНО: размеры, поведение, iframe и кнопки полностью контролирует Robokassa.
-       Никаких transform, fixed width, overflow:hidden или подмены кликов. */
+    .pay-shell { width:100%; min-width:0; overflow-x:auto; overflow-y:hidden; padding:14px 10px;
+      background:white; border-radius:15px; text-align:center; -webkit-overflow-scrolling:touch; }
+    .pay-widget { display:inline-block; width:480px; max-width:none; vertical-align:top; text-align:left; }
+    .pay-widget iframe { display:block; border:0; max-width:none; }
     .note { max-width:430px; margin:19px auto 0; color:var(--muted); font-size:13px; text-align:center; }
     @media (max-width:380px) {
-      main { padding:26px 10px 34px; }
+      main { padding-left:10px; padding-right:10px; }
       .panel { padding:20px 10px; border-radius:20px; }
       .pay-shell { padding:12px 6px; }
     }
@@ -55,11 +49,37 @@
       <strong id="pay-heading">Ваша поддержка важна</strong>
       <p>Укажите сумму и нажмите «Оплатить»</p>
     </div>
-    <div class="pay-shell">
-      <script type="text/javascript" src="https://auth.robokassa.ru/Merchant/PaymentForm/FormFLS.js?EncodedInvoiceId=oE9FcryKQk-Q-KgHEJ5psg&amp;DefaultSum=500"></script>
+    <div class="pay-shell" id="pay-shell">
+      <div class="pay-widget" id="pay-widget">
+        <script src="https://auth.robokassa.ru/Merchant/PaymentForm/FormFLS.js?EncodedInvoiceId=oE9FcryKQk-Q-KgHEJ5psg&amp;DefaultSum=500"></script>
+      </div>
     </div>
-    <p class="note">Сумму можно изменить. Добровольная поддержка не даёт платного доступа к материалам и не является покупкой услуги.</p>
+    <p class="note">Сумму можно изменить. Добровольная поддержка не является покупкой услуги и не предоставляет платного доступа.</p>
   </section>
 </main>
+<script>
+(function () {
+  'use strict';
+  var shell=document.getElementById('pay-shell');
+  var widget=document.getElementById('pay-widget');
+  function fit() {
+    var frame=widget.querySelector('iframe');
+    var naturalWidth=frame ? (parseFloat(frame.getAttribute('width')) || frame.offsetWidth || 480) : 480;
+    naturalWidth=Math.max(1,naturalWidth);
+    widget.style.width=naturalWidth+'px';
+    var style=getComputedStyle(shell);
+    var available=shell.clientWidth-parseFloat(style.paddingLeft)-parseFloat(style.paddingRight);
+    var scale=Math.min(1,Math.max(0.1,available/naturalWidth));
+    // CSS zoom changes layout and hit testing together; no transform or mouse interception.
+    if (CSS.supports && CSS.supports('zoom','0.8')) widget.style.zoom=String(scale);
+    else widget.style.zoom=''; // Older WebViews retain native-size horizontal scrolling.
+  }
+  fit();
+  window.addEventListener('load',fit);
+  window.addEventListener('resize',fit,{passive:true});
+  if ('ResizeObserver' in window) new ResizeObserver(fit).observe(shell);
+  if ('MutationObserver' in window) new MutationObserver(fit).observe(widget,{childList:true});
+})();
+</script>
 </body>
 </html>
