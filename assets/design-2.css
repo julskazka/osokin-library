@@ -206,3 +206,22 @@
 #osokin-mvp .library-progress-foot > span:last-child { display:none!important; }
 #osokin-mvp .library-progress-foot { justify-content:center; }
 #osokin-mvp #library-progress-detail { flex:1 1 auto; text-align:center; }
+
+/* Дизайн 2: корректное завершение дерева и больше воздуха между кристаллами.
+   Высоту узлов учитывает существующий JS при пересчёте линий и карты. */
+#osokin-mvp .constellation .orbit-node {
+  padding-bottom:14px!important;
+}
+@media (max-width:650px) {
+  /* Чуть шире разводим боковые узлы относительно центральной оси. */
+  #osokin-mvp .constellation .orbit-node:nth-child(3n) {
+    left:calc(var(--x) + 4%)!important;
+  }
+  #osokin-mvp .constellation .orbit-node:nth-child(3n + 1) {
+    left:calc(var(--x) - 4%)!important;
+  }
+  /* 20-й эфир — центральное окончание дерева, не боковая ветка. */
+  #osokin-mvp .constellation .orbit-node[data-order="20"]:nth-child(21) {
+    left:var(--x)!important;
+  }
+}
