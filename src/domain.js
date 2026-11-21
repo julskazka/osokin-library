@@ -1,7 +1,7 @@
 export const filters = ['Все эфиры', 'Бесплатные', 'Доступные мне', 'Не купленные'];
 export const available = (episode, purchased) => episode.is_free || purchased.has(episode.order);
 export function selectEpisodes(items, filter, purchased) {
-  return items.filter(e => filter === filters[0] || (filter === filters[1] && e.is_free) || (filter === filters[2] && available(e,purchased)) || (filter === filters[3] && !available(e,purchased)));
+  return items.filter(e => !e.hidden && (filter === filters[0] || (filter === filters[1] && e.is_free) || (filter === filters[2] && available(e,purchased)) || (filter === filters[3] && !available(e,purchased))));
 }
 export function destination(e, purchased, internal = false) {
   const open = available(e, purchased);
