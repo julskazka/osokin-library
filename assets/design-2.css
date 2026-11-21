@@ -184,7 +184,7 @@
   }
   #osokin-mvp .constellation .orbit-node[data-order="3"] .orbit-title {
     position:relative!important;
-    left:-24px!important;
+    left:-6px!important;
     width:min(160px,44vw)!important;
     max-width:none!important;
     font-size:clamp(12px,3.2vw,13.5px)!important;
