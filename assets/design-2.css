@@ -171,3 +171,29 @@
     max-width:46vw!important;
   }
 }
+
+
+/* Telegram Desktop/WebView: окно часто шире 420px.
+   Все боковые узлы остаются внутри карты, а длинная подпись не обрезается. */
+@media (max-width:650px) {
+  #osokin-mvp .constellation .orbit-node:nth-child(3n) {
+    left:calc(var(--x) + 6%)!important;
+  }
+  #osokin-mvp .constellation .orbit-node:nth-child(3n + 1) {
+    left:calc(var(--x) - 6%)!important;
+  }
+  #osokin-mvp .constellation .orbit-node[data-order="3"] .orbit-title {
+    position:relative!important;
+    left:-24px!important;
+    width:min(160px,44vw)!important;
+    max-width:none!important;
+    font-size:clamp(12px,3.2vw,13.5px)!important;
+    line-height:1.35!important;
+    letter-spacing:-.025em!important;
+    white-space:normal!important;
+    word-break:normal!important;
+    overflow-wrap:anywhere!important;
+    hyphens:none!important;
+    text-align:center!important;
+  }
+}
