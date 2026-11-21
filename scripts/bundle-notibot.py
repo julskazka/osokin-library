@@ -78,7 +78,7 @@ html, replaced = re.subn(
 )
 if replaced != 1:
     raise RuntimeError(f"Expected exactly one app module tag; found {replaced}")
-if "src/app.js" in html or 'rel="stylesheet"' in html:
+if "src/app.js" in html or '<link rel="stylesheet" href="assets/' in html:
     raise RuntimeError("Standalone HTML still contains unresolved app dependencies")
 
 file = out / "notibot-library.html"
