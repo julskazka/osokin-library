@@ -109,7 +109,11 @@ function layout(){
   return `<line data-a="${a}" data-b="${b}" x1="${p.x+ux*p.r}" y1="${p.y+uy*p.r}" x2="${q.x-ux*q.r}" y2="${q.y-uy*q.r}" class="${oa&&ob?'owned-link':'next-link'}" style="--link:#b9c3e6"/>`;
  }).join('');
 }
-function schedule(){cancelAnimationFrame(frame);frame=requestAnimationFrame(layout);}
+// Collapse simultaneous redraw requests into one animation frame.
+function schedule(){
+ if(frame)return;
+ frame=requestAnimationFrame(()=>{frame=0;layout();});
+}
 function render(){
  const visible=selectEpisodes(items,filter,purchased);
  $('#episode-filter').value=filter;
@@ -164,6 +168,16 @@ $('#om-screen').addEventListener('click',event=>{
  if(embedded&&!episode.is_free&&accessState!=='ready'){updateStatus();return;}
  try{if(embedded&&sdk){sdk.openLink(destination(episode,purchased,true));}else{window.location.assign(link.href);}}catch(error){showMessage('Не удалось открыть эфир. Попробуйте ещё раз.');}
 });
-new ResizeObserver(schedule).observe($('#om-screen'));
+// Telegram WebView may change a scroll area's HEIGHT during scrolling.
+// Recalculate the constellation only when its WIDTH changes; render() itself
+// calls schedule() whenever the filter or purchased state changes.
+const observedScreen=$('#om-screen');
+let observedScreenWidth=null;
+new ResizeObserver(entries=>{
+ const width=entries[0]?.contentRect.width ?? observedScreen.clientWidth;
+ if(observedScreenWidth!==null&&Math.abs(width-observedScreenWidth)<.5)return;
+ observedScreenWidth=width;
+ schedule();
+}).observe(observedScreen);
 document.fonts.ready.then(schedule);
 try{if(window.OSOKIN_CATALOG){items=window.OSOKIN_CATALOG;}else{const response=await fetch('data/episodes.json?v=20261113-fears3',{cache:'no-store'});if(!response.ok)throw Error('catalog');items=await response.json();}await refresh();}catch(error){$('#om-screen').textContent='Не удалось загрузить каталог. Обновите страницу или проверьте локальный сервер.';console.error(error);}
