@@ -1,0 +1,104 @@
+/* Вариант 2. Только визуальные изменения внешней страницы.
+   Каталог, логика доступа и переходы остаются общими с основным сайтом. */
+
+#osokin-mvp { --disc-size: 56px; }
+#osokin-mvp .content { padding-left:clamp(12px,3vw,25px); padding-right:clamp(12px,3vw,25px); }
+
+/* Крупная основная типографика вместо мелких подписей. */
+#osokin-mvp .library-intro { padding:20px 18px 19px; margin:8px 0 20px; }
+#osokin-mvp .library-intro h2 { font-size:clamp(21px,4.8vw,25px)!important; line-height:1.27; margin-bottom:11px; }
+#osokin-mvp .library-intro p { font-size:18px!important; line-height:1.5; margin-bottom:16px; }
+#osokin-mvp .library-hints { gap:10px; }
+#osokin-mvp .library-hints > div { font-size:17px!important; line-height:1.5; gap:12px; }
+#osokin-mvp .hint-crystal,
+#osokin-mvp .library-hints .hint-crystal { width:30px; height:30px; }
+#osokin-mvp .hint-crystal::before,
+#osokin-mvp .library-hints .hint-crystal::before { font-size:19px; }
+#osokin-mvp .hint-crystal.available::after { width:17px; height:17px; font-size:11px; }
+
+#osokin-mvp .filter-row { grid-template-columns:minmax(130px,43%) minmax(0,1fr); gap:12px; margin-bottom:17px; }
+#osokin-mvp #episode-filter { font-size:16px; min-height:51px; padding:10px 12px; }
+#osokin-mvp .filter-row #count { font-size:clamp(14px,3.5vw,17px); line-height:1.45; }
+
+#osokin-mvp .library-progress { padding:17px 16px 15px; margin:4px 0 19px; }
+#osokin-mvp .library-progress-heading { margin-bottom:12px; }
+#osokin-mvp .library-progress-title { font-size:17px; line-height:1.35; }
+#osokin-mvp #library-progress-value { font-size:24px; }
+#osokin-mvp .library-progress-track { height:12px; }
+#osokin-mvp .library-progress-foot { margin-top:10px; font-size:14px; line-height:1.35; }
+
+#osokin-mvp .map-legend { font-size:16px; line-height:1.4; gap:11px 15px; margin:0 0 18px; }
+#osokin-mvp .map-legend span { gap:8px; }
+
+/* Увеличиваем круги и рисунки внутри них без изменения схемы связей.
+   Координаты и линии по-прежнему рассчитываются исходным app.js. */
+#osokin-mvp .constellation .orbit-node { width:32%!important; max-width:165px!important; gap:8px!important; }
+#osokin-mvp .constellation .orbit-disc { width:var(--disc-size)!important; height:var(--disc-size)!important; flex-basis:var(--disc-size)!important; }
+#osokin-mvp .constellation .orbit-disc > svg,
+#osokin-mvp .constellation .orbit-disc > svg[data-lucide] {
+  width:36px!important; height:36px!important; max-width:82%!important; max-height:82%!important;
+}
+#osokin-mvp .constellation .orbit-disc > svg.crystal-wings,
+#osokin-mvp .constellation .orbit-disc > svg.crystal-pyramid-eye,
+#osokin-mvp .constellation .orbit-disc > svg.crystal-person,
+#osokin-mvp .constellation .orbit-disc > svg.crystal-up-arrow,
+#osokin-mvp .constellation .orbit-disc > svg.crystal-coins,
+#osokin-mvp .constellation .orbit-disc > svg.crystal-no-entry { width:36px!important; height:36px!important; max-width:82%!important; max-height:82%!important; }
+#osokin-mvp .owned-mark { width:19px; height:19px; right:-5px; bottom:-4px; font-size:12px; }
+#osokin-mvp .constellation .orbit-title,
+#osokin-mvp .constellation .orbit-node[data-order="4"] .orbit-title,
+#osokin-mvp .constellation .orbit-node[data-order="3"] .orbit-title {
+  font-size:clamp(15px,3.8vw,18px)!important;
+  line-height:1.35!important;
+  padding:5px 7px!important;
+  max-width:100%!important;
+  hyphens:none!important;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+}
+
+#osokin-mvp .library-guide { margin-top:42px; padding:23px 19px 16px; }
+#osokin-mvp .guide-top h2 { font-size:clamp(21px,4.8vw,25px)!important; }
+#osokin-mvp .guide-spark { font-size:29px; }
+#osokin-mvp .guide-list summary { font-size:18px; line-height:1.45; padding:19px 0; gap:12px; }
+#osokin-mvp .guide-index { font-size:15px; }
+#osokin-mvp .guide-plus { font-size:23px; }
+#osokin-mvp .guide-answer { font-size:17px; line-height:1.6; padding-bottom:20px; }
+#osokin-mvp .support-button { min-height:56px; font-size:18px; }
+#osokin-mvp .footer { font-size:14px; }
+
+@media (max-width:420px) {
+  #osokin-mvp { --disc-size:54px; }
+  #osokin-mvp .library-intro { padding:18px 15px; }
+  #osokin-mvp .library-intro p { font-size:17px!important; }
+  #osokin-mvp .library-hints > div { font-size:16px!important; gap:10px; }
+  #osokin-mvp .filter-row { grid-template-columns:minmax(128px,43%) minmax(0,1fr); gap:8px; }
+  #osokin-mvp #episode-filter { font-size:15px; padding:9px; }
+  #osokin-mvp .filter-row #count { font-size:14px; }
+  #osokin-mvp .map-legend { font-size:15px; }
+  #osokin-mvp .constellation .orbit-title,
+  #osokin-mvp .constellation .orbit-node[data-order="4"] .orbit-title,
+  #osokin-mvp .constellation .orbit-node[data-order="3"] .orbit-title {
+    font-size:clamp(14px,3.9vw,16px)!important;
+    padding:4px 5px!important;
+  }
+  #osokin-mvp .constellation .orbit-disc > svg,
+  #osokin-mvp .constellation .orbit-disc > svg[data-lucide],
+  #osokin-mvp .constellation .orbit-disc > svg.crystal-wings,
+  #osokin-mvp .constellation .orbit-disc > svg.crystal-pyramid-eye,
+  #osokin-mvp .constellation .orbit-disc > svg.crystal-person,
+  #osokin-mvp .constellation .orbit-disc > svg.crystal-up-arrow,
+  #osokin-mvp .constellation .orbit-disc > svg.crystal-coins,
+  #osokin-mvp .constellation .orbit-disc > svg.crystal-no-entry { width:34px!important; height:34px!important; }
+  #osokin-mvp .library-guide { padding:20px 15px 14px; }
+  #osokin-mvp .guide-list summary { font-size:17px; }
+  #osokin-mvp .guide-answer { font-size:16px; }
+}
+@media (max-width:350px) {
+  #osokin-mvp { --disc-size:50px; }
+  #osokin-mvp .constellation .orbit-title,
+  #osokin-mvp .constellation .orbit-node[data-order="4"] .orbit-title,
+  #osokin-mvp .constellation .orbit-node[data-order="3"] .orbit-title { font-size:13.5px!important; padding:4px 3px!important; }
+  #osokin-mvp .map-legend { font-size:14px; gap:8px; }
+  #osokin-mvp .filter-row #count { font-size:13px; }
+}
