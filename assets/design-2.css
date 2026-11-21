@@ -233,3 +233,35 @@
   -webkit-backdrop-filter:none!important;
   backdrop-filter:none!important;
 }
+
+
+/* iPhone / Telegram WebView: lock the page to its viewport horizontally.
+   Vertical native scrolling and pinch zoom stay enabled. Do not set
+   position:fixed or preventDefault on touchmove: those would break scrolling. */
+html,
+html > body {
+  width:100%;
+  max-width:100%;
+  overflow-x:hidden; /* older WebKit fallback */
+  overscroll-behavior-x:none;
+  touch-action:pan-y pinch-zoom;
+}
+@supports (overflow:clip) {
+  html,
+  html > body { overflow-x:clip; }
+}
+#osokin-mvp {
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  overflow-x:hidden; /* older WebKit fallback */
+  overscroll-behavior-x:none;
+  touch-action:pan-y pinch-zoom;
+}
+@supports (overflow:clip) {
+  #osokin-mvp { overflow-x:clip; }
+}
+#osokin-mvp .device {
+  min-width:0;
+  max-width:100%;
+}
