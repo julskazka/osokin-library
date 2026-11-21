@@ -263,5 +263,5 @@ html > body {
 }
 #osokin-mvp .device {
   min-width:0;
-  max-width:100%;
+  /* Preserve the existing 560px / 620px desktop maximum widths. */
 }
