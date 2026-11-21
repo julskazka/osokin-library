@@ -13,6 +13,25 @@
   letter-spacing:.23em;text-indent:.23em;margin:0 0 16px;
   text-shadow:0 0 13px rgba(235,172,61,.55);
 }
+
+#osokin-mvp .osokin-featured-link{
+ display:flex;flex-direction:column;align-items:center;
+ width:100%;max-width:100%;min-width:0;
+ color:inherit;text-decoration:none;cursor:pointer;
+ -webkit-tap-highlight-color:transparent;
+}
+#osokin-mvp .osokin-featured-link:focus-visible{
+ outline:2px solid #f6d691;outline-offset:4px;border-radius:14px;
+}
+#osokin-mvp .osokin-featured-link:hover .osokin-featured-orb{
+ box-shadow:0 0 0 5px rgba(239,177,63,.09),0 0 21px rgba(255,186,72,.6),0 0 42px rgba(238,170,56,.27),inset 0 0 19px rgba(245,191,93,.18),inset 0 2px 5px rgba(255,244,187,.25);
+}
+#osokin-mvp .osokin-featured-access-note{
+ width:min(100%,350px);max-width:100%;margin:12px auto 0;
+ color:#eed6ab;font:500 12px/1.5 "Manrope",Arial,sans-serif;
+ overflow-wrap:break-word;
+}
+#osokin-mvp .osokin-featured-access-note[hidden]{display:none!important}
 #osokin-mvp .osokin-featured-orb{
   position:relative;display:grid;place-items:center;
   width:clamp(78px,23vw,104px);height:clamp(78px,23vw,104px);
@@ -75,7 +94,7 @@
 <div><span class="hint-crystal locked" aria-hidden="true"></span><span><strong>Платные</strong> — стоимость перед оплатой</span></div>
 <div><span class="hint-crystal available" aria-hidden="true"></span><span><strong>Купленные вами</strong> — оплачивать снова не нужно</span></div></div></section><div class="filter-row"><select id="episode-filter" aria-label="Фильтр эфиров"></select><p id="count" role="status" aria-live="polite"></p></div><section class="library-progress" aria-label="Прогресс открытия библиотеки"><div class="library-progress-heading"><span class="library-progress-title">Моя коллекция эфиров</span><strong id="library-progress-value">0%</strong></div><div class="library-progress-track" id="library-progress-bar" role="progressbar" aria-label="Доля открытых эфиров" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="library-progress-fill" class="library-progress-fill"></span></div><div class="library-progress-foot"><span>0%</span><span id="library-progress-detail">0 эфиров открыто</span><span>100%</span></div></section><div class="map-legend"><span><i class="hint-crystal free" aria-hidden="true"></i>Бесплатный</span><span><i class="hint-crystal available" aria-hidden="true"></i>Куплен</span><span><i class="hint-crystal locked" aria-hidden="true"></i>Не куплен</span></div><section id="osokin-featured-preview" aria-label="Новинка — Небесная Канцелярия">
   <span class="osokin-featured-label">НОВИНКА</span>
-  <div class="osokin-featured-orb" aria-hidden="true">
+  <a class="osokin-featured-link" href="https://t.me/Info_aboutyou_bot/aboutme?startapp=a_38iscsQh91iXT76FEtcLhS_lp" data-order="21" data-product-id="1TnkPJ4HQ6TT0vJXzLT3Mw" data-purchase-page-id="38iscsQh91iXT76FEtcLhS" data-access-page-id="3xBocyoJp7lCRrHxrz0EbX" data-access-url="https://t.me/Info_aboutyou_bot/aboutme?startapp=a_3xBocyoJp7lCRrHxrz0EbX_lp" aria-label="Небесная Канцелярия — перейти к описанию эфира"><div class="osokin-featured-orb" aria-hidden="true">
     <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <!-- A sealed heavenly decree with wings, rather than a generic document. -->
       <path d="M31.8 5.5 33.2 9.8 37.5 11.2 33.2 12.6 31.8 16.8 30.4 12.6 26.1 11.2 30.4 9.8Z" fill="currentColor"/>
@@ -89,11 +108,11 @@
       <path d="M16 13.5 17 16l2.5 1-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1ZM48 13.5l1 2.5 2.5 1-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1Z" fill="currentColor" opacity=".78"/>
     </svg>
   </div>
-  <span class="osokin-featured-title">Небесная Канцелярия</span>
+  <span class="osokin-featured-title">Небесная Канцелярия</span></a><span class="osokin-featured-access-note" role="status" hidden></span>
   <div class="osokin-featured-divider" aria-hidden="true"><span></span></div>
 </section><div id="om-screen"></div><h2 class="guide-section-title" id="guide-heading">Как пользоваться приложением</h2><section class="library-guide" aria-labelledby="guide-heading"><div class="guide-list">
 <details><summary><span class="guide-index">01</span><span>Как выбрать эфир</span><span class="guide-plus">+</span></summary><div class="guide-answer">Выберите интересующую тему. Внутри — описание записи и, если предусмотрены, тайм-коды нужных фрагментов.</div></details>
 <details><summary><span class="guide-index">02</span><span>Бесплатные и платные записи</span><span class="guide-plus">+</span></summary><div class="guide-answer">Бесплатные открываются сразу. Стоимость платной записи указана перед оплатой. После покупки эфир появится среди доступных вам.</div></details>
 <details><summary><span class="guide-index">03</span><span>Где найти купленное</span><span class="guide-plus">+</span></summary><div class="guide-answer">Вернитесь в библиотеку через тот же аккаунт Telegram или MAX, с которого покупали. Выберите фильтр «Доступные мне». Ссылка на запись также приходит после оплаты.</div></details>
 <details><summary><span class="guide-index">04</span><span>Если доступ не появился</span><span class="guide-plus">+</span></summary><div class="guide-answer">Закройте и заново откройте библиотеку из аккаунта, в котором совершали покупку. Не оплачивайте повторно: свяжитесь с поддержкой, назовите эфир и приложите чек или номер заказа.</div></details>
-</div></section><div class="support-action"><a class="support-button" href="https://t.me/m/DQivDEyUMDEy" target="_blank" rel="noopener noreferrer">Написать в поддержку</a></div><p class="footer">Демонстрация интерфейса. Реальные покупки не проверяются.</p></div></div></main><script src="assets/lucide.js"></script><script type="module" src="src/app.js?v=20261121-hidden21"></script></body></html>
+</div></section><div class="support-action"><a class="support-button" href="https://t.me/m/DQivDEyUMDEy" target="_blank" rel="noopener noreferrer">Написать в поддержку</a></div><p class="footer">Демонстрация интерфейса. Реальные покупки не проверяются.</p></div></div></main><script src="src/featured-preview.js"></script><script src="assets/lucide.js"></script><script type="module" src="src/app.js?v=20261121-hidden21"></script></body></html>
