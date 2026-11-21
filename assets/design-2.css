@@ -197,3 +197,12 @@
     text-align:center!important;
   }
 }
+
+
+/* Дизайн 2: убрать лишние цифры, отмеченные на скриншоте.
+   Сам прогресс, купленные эфиры и вычисления остаются прежними. */
+#osokin-mvp .filter-row #count { display:none!important; }
+#osokin-mvp .library-progress-foot > span:first-child,
+#osokin-mvp .library-progress-foot > span:last-child { display:none!important; }
+#osokin-mvp .library-progress-foot { justify-content:center; }
+#osokin-mvp #library-progress-detail { flex:1 1 auto; text-align:center; }
