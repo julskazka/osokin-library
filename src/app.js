@@ -1,5 +1,6 @@
 import {filters,available,selectEpisodes,destination,treeGeometry} from './domain.js';
 import {DemoAccessProvider,NotibotAccessProvider} from './access-provider.js';
+import {createPurchaseRecheck} from './purchase-recheck.js';
 const provider=new DemoAccessProvider();
 const $=s=>document.querySelector(s);
 const escape=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -64,6 +65,43 @@ const demoProvider=provider;
 const sdk=window.notibot;
 const accessProvider=new NotibotAccessProvider(sdk);
 let embedded=window.parent!==window,connected=false,accessState='waiting',refreshVersion=0;
+const paymentMemoryKey='osokin-pending-episode-v1';
+const paymentMemoryLifetime=15*60*1000;
+function readPendingPayment(){
+ try{
+  const data=JSON.parse(sessionStorage.getItem(paymentMemoryKey)||'null');
+  if(data&&Number.isInteger(data.order)&&data.order>0&&Date.now()-data.at>=0&&Date.now()-data.at<paymentMemoryLifetime)return data.order;
+ }catch(error){/* iOS private mode may deny storage */}
+ return null;
+}
+let pendingOrder=readPendingPayment(),connectedIdentity=null;
+function rememberPendingPayment(order){
+ pendingOrder=order;
+ try{sessionStorage.setItem(paymentMemoryKey,JSON.stringify({order,at:Date.now()}));}catch(error){}
+ updateStatus();
+}
+function forgetPendingPayment(){
+ pendingOrder=null;
+ try{sessionStorage.removeItem(paymentMemoryKey);}catch(error){}
+ updateStatus();
+}
+let scanBaseline=new Set(),scanTarget=null;
+const purchaseRecheck=createPurchaseRecheck({
+ canRun:()=>embedded&&connected&&items.length>0&&!document.hidden,
+ check:async()=>{
+  const refreshed=await refresh(true,{silent:true});
+  if(!refreshed)return false;
+  if(scanTarget!==null)return purchased.has(scanTarget);
+  return [...purchased].some(order=>!scanBaseline.has(order));
+ }
+});
+function startPurchaseRecheck(initialDelay=0){
+ if(!embedded||!connected||!items.length||document.hidden)return;
+ if(pendingOrder!==null&&purchased.has(pendingOrder))forgetPendingPayment();
+ scanTarget=pendingOrder;
+ scanBaseline=new Set(purchased);
+ purchaseRecheck.start(initialDelay);
+}
 function updateEnvironment(){
  $('.demo').hidden=embedded;
  $('.profile').hidden=embedded;
@@ -76,14 +114,26 @@ function showMessage(message=''){
  notice.textContent=message;notice.hidden=!message;
 }
 function updateStatus(){
- showMessage(embedded&&(!sdk||accessState==='error')?'Не удалось обновить доступ. Попробуйте ещё раз.':'');
+ if(embedded&&(!sdk||accessState==='error')){
+  showMessage('Не удалось обновить доступ. Если вы уже оплатили эфир, не оплачивайте повторно — обратитесь в поддержку.');
+ }else if(embedded&&pendingOrder!==null&&!purchased.has(pendingOrder)){
+  showMessage('Проверяем доступ после перехода к оплате. Если вы уже оплатили эфир, не оплачивайте его повторно. Доступ обновится автоматически после подтверждения Notibot.');
+ }else showMessage('');
 }
-function syncEnvironment(){
+function syncEnvironment(user){
+ const identity=user?.id!=null?String(user.id):sdk?.user?.id!=null?String(sdk.user.id):null;
+ // Treat a new user as a new security context; never reuse their entitlements.
+ if(connected&&identity!==null&&connectedIdentity===identity){
+  if(items.length)startPurchaseRecheck(0);
+  return;
+ }
+ if(connectedIdentity!==null&&identity!==null&&identity!==connectedIdentity)forgetPendingPayment();
+ if(identity!==null)connectedIdentity=identity;
+ purchaseRecheck.stop();
  connected=true;embedded=true;
- // Clear previous user's entitlements before any asynchronous work.
  refreshVersion++;purchased=new Set();accessState='waiting';
  updateEnvironment();
- if(items.length)void refresh(true);else updateStatus();
+ if(items.length)void refresh(true).then(()=>startPurchaseRecheck(3000));else updateStatus();
 }
 updateEnvironment();updateStatus();
 sdk?.onUpdate(syncEnvironment);
@@ -131,24 +181,45 @@ function render(){
 function controls(){
  $('#purchases').innerHTML=items.filter(e=>!e.is_free).map(e=>`<label><input type="checkbox" data-purchase="${e.order}" ${purchased.has(e.order)?'checked':''}>${escape(e.title)}</label>`).join('');
 }
-async function refresh(forceRefresh=false){
+async function refresh(forceRefresh=false,{silent=false}={}){
  const version=++refreshVersion;
- if(!embedded){const state=await demoProvider.refresh();if(version!==refreshVersion)return;purchased=state.purchased;controls();render();updateStatus();return;}
- purchased=new Set();
- if(!connected){accessState='waiting';updateStatus();render();return;}
- accessState='loading';updateStatus();render();
+ if(!embedded){
+  const state=await demoProvider.refresh();
+  if(version!==refreshVersion)return false;
+  purchased=state.purchased;controls();render();updateStatus();return true;
+ }
+ if(!connected){accessState='waiting';updateStatus();if(!silent)render();return false;}
+ if(!silent){accessState='loading';updateStatus();render();}
+ const before=new Set(purchased);
+ let succeeded=false;
  try{
   const state=await accessProvider.refresh(items,{forceRefresh});
-  if(version!==refreshVersion)return;
-  purchased=state.purchased;accessState='ready';
- }catch(error){if(version!==refreshVersion)return;purchased=new Set();accessState='error';}
- updateStatus();render();
+  if(version!==refreshVersion)return false;
+  purchased=state.purchased;
+  accessState='ready';
+  succeeded=true;
+  if(pendingOrder!==null&&purchased.has(pendingOrder))forgetPendingPayment();
+ }catch(error){
+  if(version!==refreshVersion)return false;
+  accessState='error';
+  if(!silent)purchased=new Set();
+ }
+ const changed=before.size!==purchased.size||[...before].some(order=>!purchased.has(order));
+ updateStatus();
+ // Background checks should not rebuild 20 crystals while the user scrolls.
+ if(!silent||changed)render();
+ return succeeded;
 }
-let refreshTimer;
+let refreshTimer,lastReturnCheck=0;
 function refreshAfterReturn(){
- if(!items.length)return;
+ if(!embedded||!connected||!items.length)return;
+ if(document.hidden){purchaseRecheck.stop();return;}
  clearTimeout(refreshTimer);
- refreshTimer=setTimeout(()=>{void refresh(true);},200);
+ refreshTimer=setTimeout(()=>{
+  if(Date.now()-lastReturnCheck<2000)return;
+  lastReturnCheck=Date.now();
+  startPurchaseRecheck(0);
+ },250);
 }
 $('#episode-filter').innerHTML=filters.map(f=>`<option value="${f}">${f}</option>`).join('');
 $('#episode-filter').addEventListener('change',event=>{filter=event.target.value;render();});
@@ -158,7 +229,7 @@ $('#refresh').addEventListener('click',()=>{void refresh(true);});
 $('#refresh-access').addEventListener('click',()=>{void refresh(true);});
 window.addEventListener('focus',refreshAfterReturn);
 window.addEventListener('pageshow',event=>{if(event.persisted)refreshAfterReturn();});
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshAfterReturn();});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){clearTimeout(refreshTimer);purchaseRecheck.stop();}else refreshAfterReturn();});
 $('#om-screen').addEventListener('click',event=>{
  const link=event.target.closest('a.orbit-node');
  if(!link||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;
@@ -166,7 +237,17 @@ $('#om-screen').addEventListener('click',event=>{
  if(embedded&&!connected){showMessage('Попробуйте ещё раз через несколько секунд.');return;}
  const episode=items.find(e=>e.order===Number(link.dataset.order));
  if(embedded&&!episode.is_free&&accessState!=='ready'){updateStatus();return;}
- try{if(embedded&&sdk){sdk.openLink(destination(episode,purchased,true));}else{window.location.assign(link.href);}}catch(error){showMessage('Не удалось открыть эфир. Попробуйте ещё раз.');}
+ if(embedded&&!episode.is_free&&!purchased.has(episode.order)&&pendingOrder===episode.order){
+  const proceed=window.confirm('Если вы уже оплатили этот эфир, НЕ оплачивайте его повторно: библиотека проверяет доступ автоматически. Продолжить к оплате только в том случае, если платежа не было?');
+  if(!proceed){updateStatus();startPurchaseRecheck(0);return;}
+ }
+ try{
+  if(embedded&&sdk){
+   const isPurchase=!episode.is_free&&!purchased.has(episode.order);
+   if(isPurchase)rememberPendingPayment(episode.order);
+   sdk.openLink(destination(episode,purchased,true));
+  }else window.location.assign(link.href);
+ }catch(error){showMessage('Не удалось открыть эфир. Попробуйте ещё раз.');}
 });
 // Telegram WebView may change a scroll area's HEIGHT during scrolling.
 // Recalculate the constellation only when its WIDTH changes; render() itself
@@ -180,4 +261,10 @@ new ResizeObserver(entries=>{
  schedule();
 }).observe(observedScreen);
 document.fonts.ready.then(schedule);
-try{if(window.OSOKIN_CATALOG){items=window.OSOKIN_CATALOG;}else{const response=await fetch('data/episodes.json?v=20261113-fears3',{cache:'no-store'});if(!response.ok)throw Error('catalog');items=await response.json();}await refresh();}catch(error){$('#om-screen').textContent='Не удалось загрузить каталог. Обновите страницу или проверьте локальный сервер.';console.error(error);}
+try{
+ if(window.OSOKIN_CATALOG){items=window.OSOKIN_CATALOG;}
+ else{const response=await fetch('data/episodes.json?v=20261113-fears3',{cache:'no-store'});if(!response.ok)throw Error('catalog');items=await response.json();}
+ if(pendingOrder!==null&&!items.some(item=>item.order===pendingOrder&&!item.is_free))forgetPendingPayment();
+ await refresh(embedded);
+ if(embedded&&connected)startPurchaseRecheck(3000);
+}catch(error){$('#om-screen').textContent='Не удалось загрузить каталог. Обновите страницу или проверьте локальный сервер.';console.error(error);}
