@@ -218,5 +218,17 @@
     "purchase_page_id": "3udaKMuhobzmmaXJ7dGvFe",
     "access_page_id": "4PH7O13XiFBKCA5HVAX3fs",
     "product_id": "4d2So6NVB7HvaEE1Ep8KaR"
+  },
+  {
+    "order": 21,
+    "title": "Небесная Канцелярия",
+    "description": "",
+    "is_free": false,
+    "hidden": true,
+    "purchase_url": "https://t.me/Info_aboutyou_bot/aboutme?startapp=a_38iscsQh91iXT76FEtcLhS_lp",
+    "access_url": "https://t.me/Info_aboutyou_bot/aboutme?startapp=a_3xBocyoJp7lCRrHxrz0EbX_lp",
+    "purchase_page_id": "38iscsQh91iXT76FEtcLhS",
+    "access_page_id": "3xBocyoJp7lCRrHxrz0EbX",
+    "product_id": "1TnkPJ4HQ6TT0vJXzLT3Mw"
   }
 ]
