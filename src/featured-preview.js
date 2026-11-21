@@ -1,8 +1,12 @@
-/* The golden featured broadcast is staged only on the permanent design-2 page.
+/* The golden featured broadcast is used on the permanent preview and for the scheduled main-page launch.
    No paid access is inferred from a click or locally stored data. */
 (() => {
   const feature = document.getElementById('osokin-featured-preview');
   if (!feature) return;
+  let started = false;
+  function initializeFeaturedLink() {
+    if (started || feature.hidden) return;
+    started = true;
   const link = feature.querySelector('.osokin-featured-link');
   const status = feature.querySelector('.osokin-featured-access-note');
   if (!link || !status) return;
@@ -123,4 +127,7 @@
       if (!owned) recheckAfterReturn();
     } catch (_) { message('Не удалось открыть эфир. Попробуйте ещё раз.'); }
   });
+  }
+  feature.addEventListener('osokin-feature-release', initializeFeaturedLink);
+  initializeFeaturedLink();
 })();
