@@ -225,3 +225,11 @@
     left:var(--x)!important;
   }
 }
+
+
+/* Telegram WebView: 20 backdrop-blur layers were costly to repaint while scrolling.
+   Keep text, colors and translucency; avoid the per-label live background blur. */
+#osokin-mvp .constellation .orbit-title {
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
