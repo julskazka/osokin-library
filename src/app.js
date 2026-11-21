@@ -165,13 +165,14 @@ function schedule(){
  frame=requestAnimationFrame(()=>{frame=0;layout();});
 }
 function render(){
- const visible=selectEpisodes(items,filter,purchased);
+ const publicItems=items.filter(e=>!e.hidden);
+ const visible=selectEpisodes(publicItems,filter,purchased);
  $('#episode-filter').value=filter;
- $('#count').textContent=`Показано ${visible.length} из ${items.length} · Доступно ${items.filter(e=>available(e,purchased)).length}`;
- const unlocked=items.filter(e=>available(e,purchased)).length;
- const percent=items.length?Math.round(unlocked/items.length*100):0;
+ $('#count').textContent=`Показано ${visible.length} из ${publicItems.length} · Доступно ${publicItems.filter(e=>available(e,purchased)).length}`;
+ const unlocked=publicItems.filter(e=>available(e,purchased)).length;
+ const percent=publicItems.length?Math.round(unlocked/publicItems.length*100):0;
  $('#library-progress-value').textContent=`${percent}%`;
- $('#library-progress-detail').textContent=`${unlocked} из ${items.length} эфиров открыто`;
+ $('#library-progress-detail').textContent=`${unlocked} из ${publicItems.length} эфиров открыто`;
  $('#library-progress-fill').style.width=`${percent}%`;
  $('#library-progress-bar').setAttribute('aria-valuenow',String(percent));
  $('#om-screen').innerHTML=visible.length?`<div class="constellation" aria-label="Дерево эфиров"><svg class="constellation-links" aria-hidden="true"></svg>${visible.map(e=>{const open=available(e,purchased),status=e.is_free?'Бесплатный':open?(embedded?'Куплен':'Куплен · демо'):(embedded&&accessState!=='ready'?'Проверяем доступ':'Не куплен');return `<a class="orbit-node ${open?'purchased':'locked'}" data-order="${e.order}" style="--topic:${colors[(e.order-1)%colors.length]}" href="${escape(destination(e,purchased,embedded))}" aria-label="${escape(e.title)} — ${status}" title="${escape(e.description)}"><span class="orbit-disc">${crystalIcon(e.title)}${!e.is_free&&purchased.has(e.order)?'<span class="owned-mark" aria-hidden="true">✓</span>':''}</span><span class="orbit-title">${escape(e.title)}</span></a>`;}).join('')}</div>`:'<p class="empty">Здесь пока нет эфиров. Выберите другой фильтр.</p>';
@@ -179,7 +180,7 @@ function render(){
  schedule();
 }
 function controls(){
- $('#purchases').innerHTML=items.filter(e=>!e.is_free).map(e=>`<label><input type="checkbox" data-purchase="${e.order}" ${purchased.has(e.order)?'checked':''}>${escape(e.title)}</label>`).join('');
+ $('#purchases').innerHTML=items.filter(e=>!e.is_free&&!e.hidden).map(e=>`<label><input type="checkbox" data-purchase="${e.order}" ${purchased.has(e.order)?'checked':''}>${escape(e.title)}</label>`).join('');
 }
 async function refresh(forceRefresh=false,{silent=false}={}){
  const version=++refreshVersion;
