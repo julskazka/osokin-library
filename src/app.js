@@ -244,7 +244,7 @@ $('#om-screen').addEventListener('click',event=>{
  try{
   if(embedded&&sdk){
    const isPurchase=!episode.is_free&&!purchased.has(episode.order);
-   if(isPurchase)rememberPendingPayment(episode.order);
+   if(isPurchase){rememberPendingPayment(episode.order);startPurchaseRecheck(3000);}
    sdk.openLink(destination(episode,purchased,true));
   }else window.location.assign(link.href);
  }catch(error){showMessage('Не удалось открыть эфир. Попробуйте ещё раз.');}
