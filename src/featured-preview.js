@@ -83,6 +83,10 @@
   if (embedded) {
    document.addEventListener('osokin:entitlements-updated', onAccessUpdated);
    document.addEventListener('osokin:entitlements-reset', onAccessReset);
+   // A tab opened before the 16:30 launch may already have a verified SDK result.
+   if (Array.isArray(window.OSOKIN_VERIFIED_ACCESS?.purchasedOrders)) {
+    onAccessUpdated({detail:window.OSOKIN_VERIFIED_ACCESS});
+   }
   }
 
   // Fallback only if an early click occurs before the main library's first response.
