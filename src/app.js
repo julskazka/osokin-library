@@ -119,8 +119,8 @@ function updateStatus(){
   showMessage('Не удалось обновить доступ. Если вы уже оплатили эфир, не оплачивайте повторно — обратитесь в поддержку.');
  }else if(embedded&&pendingOrder!==null&&!purchased.has(pendingOrder)){
   showMessage(repurchaseOrder===pendingOrder&&Date.now()<repurchaseConfirmUntil
-   ? 'Если вы уже оплатили эфир, не оплачивайте повторно. Проверяем доступ. Если оплаты не было, нажмите на этот кристалл ещё раз, чтобы перейти к оплате.'
-   : 'Проверяем доступ после перехода к оплате. Если вы уже оплатили эфир, не оплачивайте его повторно. Доступ обновится автоматически после подтверждения Notibot.');
+   ? 'Ожидаем подтверждение оплаты. Доступ проверяется автоматически. Если оплаты не было, нажмите на этот кристалл ещё раз. Не оплачивайте повторно, если платёж уже прошёл.'
+   : 'Ожидаем подтверждение оплаты. Доступ проверяется автоматически. Если он не появился, обновите страницу через несколько минут. Не оплачивайте повторно.');
  }else showMessage('');
 }
 function syncEnvironment(user){
@@ -135,6 +135,8 @@ function syncEnvironment(user){
  purchaseRecheck.stop();
  connected=true;embedded=true;
  refreshVersion++;purchased=new Set();accessState='waiting';
+ // Clear the featured paid badge when the SDK switches user context.
+ document.dispatchEvent(new Event('osokin:entitlements-reset'));
  updateEnvironment();
  if(items.length)void refresh(true).then(()=>startPurchaseRecheck(3000));else updateStatus();
 }
@@ -202,6 +204,11 @@ async function refresh(forceRefresh=false,{silent=false}={}){
   purchased=state.purchased;
   accessState='ready';
   succeeded=true;
+  // Let the separate featured crystal reuse the verified SDK response.
+  // Do not make a second parallel Notibot purchase request for it.
+  document.dispatchEvent(new CustomEvent('osokin:entitlements-updated',{
+   detail:{purchasedOrders:[...purchased]}
+  }));
   if(pendingOrder!==null&&purchased.has(pendingOrder))forgetPendingPayment();
  }catch(error){
   if(version!==refreshVersion)return false;
