@@ -136,6 +136,7 @@ function syncEnvironment(user){
  connected=true;embedded=true;
  refreshVersion++;purchased=new Set();accessState='waiting';
  // Clear the featured paid badge when the SDK switches user context.
+ window.OSOKIN_VERIFIED_ACCESS=null;
  document.dispatchEvent(new Event('osokin:entitlements-reset'));
  updateEnvironment();
  if(items.length)void refresh(true).then(()=>startPurchaseRecheck(3000));else updateStatus();
@@ -206,8 +207,10 @@ async function refresh(forceRefresh=false,{silent=false}={}){
   succeeded=true;
   // Let the separate featured crystal reuse the verified SDK response.
   // Do not make a second parallel Notibot purchase request for it.
+  const verifiedAccess={purchasedOrders:[...purchased]};
+  window.OSOKIN_VERIFIED_ACCESS=verifiedAccess;
   document.dispatchEvent(new CustomEvent('osokin:entitlements-updated',{
-   detail:{purchasedOrders:[...purchased]}
+   detail:verifiedAccess
   }));
   if(pendingOrder!==null&&purchased.has(pendingOrder))forgetPendingPayment();
  }catch(error){
