@@ -16,7 +16,7 @@
   const afterUrl = link.dataset.accessUrl;
   const pendingKey = 'osokin-pending-episode-v1';
   const order = Number(link.dataset.order);
-  let userId = null, owned = false, checked = false, checkInFlight = null, generation = 0, lastCheck = 0, timers = [];
+  let userId = null, owned = false, checked = false, checkInFlight = null, generation = 0, lastCheck = 0, timers = [], repurchaseConfirmUntil = 0;
   const message = text => { status.textContent = text; status.hidden = !text; };
   const pending = () => {
     try {
@@ -41,7 +41,7 @@
     link.setAttribute('aria-label', value ?
       'Небесная Канцелярия — открыть купленный эфир' :
       'Небесная Канцелярия — перейти к описанию эфира');
-    if (value) { forget(); clearRechecks(); message(''); }
+    if (value) { repurchaseConfirmUntil = 0; forget(); clearRechecks(); message(''); }
   };
   async function verify(forceRefresh = true) {
     if (!userId || typeof sdk?.getPurchasedProducts !== 'function') return false;
@@ -60,7 +60,9 @@
         lastCheck = Date.now();
         update(ids.includes(link.dataset.productId));
         if (!owned) message(pending() ?
-          'Если эфир уже оплачен, не оплачивайте повторно. Проверяем подтверждение покупки.' : '');
+          (Date.now() < repurchaseConfirmUntil ?
+            'Если эфир уже оплачен, не оплачивайте повторно. Если оплаты не было, нажмите на золотой круг ещё раз, чтобы перейти к оплате.' :
+            'Если эфир уже оплачен, не оплачивайте повторно. Проверяем подтверждение покупки.') : '');
         return true;
       } catch (_) {
         if (current === generation) {
@@ -95,6 +97,7 @@
         checked = false;
         lastCheck = 0;
         checkInFlight = null;
+        repurchaseConfirmUntil = 0;
         update(false);
       }
       recheckAfterReturn();
@@ -117,9 +120,16 @@
       message('Проверяем доступ…');
       if (!await verify(true)) return;
     }
-    if (!owned && pending() && !window.confirm(
-      'Вы уже переходили к оплате. Если эфир оплачен, НЕ оплачивайте повторно: дождитесь подтверждения или обратитесь в поддержку. Вы уверены, что оплаты ещё не было?'
-    )) { recheckAfterReturn(); return; }
+    if (!owned && pending()) {
+      if (Date.now() >= repurchaseConfirmUntil) {
+        // No browser modal: a deliberate second tap confirms an unfinished purchase.
+        repurchaseConfirmUntil = Date.now() + 30000;
+        message('Если эфир уже оплачен, не оплачивайте повторно — доступ проверяется автоматически. Если оплаты не было, нажмите на золотой круг ещё раз, чтобы перейти к оплате.');
+        recheckAfterReturn();
+        return;
+      }
+      repurchaseConfirmUntil = 0;
+    }
     try {
       if (!owned) remember();
       sdk.openLink('https://t.me/post#' +
