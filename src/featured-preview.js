@@ -1,143 +1,152 @@
-/* The golden featured broadcast is used on the permanent preview and for the scheduled main-page launch.
-   No paid access is inferred from a click or locally stored data. */
+/* The featured broadcast uses the same verified purchase data as the crystal library.
+ * The main page and permanent preview use this one controller.
+ * Never infer paid access from opening checkout or from sessionStorage. */
 (() => {
-  const feature = document.getElementById('osokin-featured-preview');
-  if (!feature) return;
-  let started = false;
-  function initializeFeaturedLink() {
-    if (started || feature.hidden) return;
-    started = true;
+ const feature = document.getElementById('osokin-featured-preview');
+ if (!feature) return;
+ let initialized = false;
+ function initialize() {
+  if (initialized || feature.hidden) return;
+  initialized = true;
+
   const link = feature.querySelector('.osokin-featured-link');
-  const status = feature.querySelector('.osokin-featured-access-note');
-  if (!link || !status) return;
+  const note = feature.querySelector('.osokin-featured-access-note');
+  const checkmark = feature.querySelector('.osokin-featured-owned-mark');
+  if (!link || !note || !checkmark) return;
+
   const sdk = window.notibot;
   const embedded = window.parent !== window;
-  const beforeUrl = link.getAttribute('href');
-  const afterUrl = link.dataset.accessUrl;
-  const pendingKey = 'osokin-pending-episode-v1';
   const order = Number(link.dataset.order);
-  let userId = null, owned = false, checked = false, checkInFlight = null, generation = 0, lastCheck = 0, timers = [], repurchaseConfirmUntil = 0;
-  const message = text => { status.textContent = text; status.hidden = !text; };
-  const pending = () => {
-    try {
-      const record = JSON.parse(sessionStorage.getItem(pendingKey) || 'null');
-      return record?.order === order && Number.isFinite(record.at) &&
-        Date.now() >= record.at && Date.now() - record.at < 15 * 60 * 1000;
-    } catch (_) { return false; }
-  };
-  const remember = () => {
-    try { sessionStorage.setItem(pendingKey, JSON.stringify({order, at: Date.now()})); } catch (_) {}
-  };
-  const forget = () => {
-    try {
-      const record = JSON.parse(sessionStorage.getItem(pendingKey) || 'null');
-      if (record?.order === order) sessionStorage.removeItem(pendingKey);
-    } catch (_) {}
-  };
-  const clearRechecks = () => { timers.forEach(clearTimeout); timers = []; };
-  const update = value => {
-    owned = value;
-    link.href = value ? afterUrl : beforeUrl;
-    link.setAttribute('aria-label', value ?
-      'Небесная Канцелярия — открыть купленный эфир' :
-      'Небесная Канцелярия — перейти к описанию эфира');
-    if (value) { repurchaseConfirmUntil = 0; forget(); clearRechecks(); message(''); }
-  };
-  async function verify(forceRefresh = true) {
-    if (!userId || typeof sdk?.getPurchasedProducts !== 'function') return false;
-    if (checkInFlight) return checkInFlight;
-    const current = generation;
-    const task = (async () => {
-      let timeout;
-      try {
-        const ids = await Promise.race([
-          sdk.getPurchasedProducts(forceRefresh ? {forceRefresh: true} : {}),
-          new Promise((_, reject) => { timeout = setTimeout(() => reject(Error('ACCESS_TIMEOUT')), 9000); })
-        ]);
-        if (current !== generation) return false;
-        if (!Array.isArray(ids) || ids.some(id => typeof id !== 'string')) throw Error('INVALID_PURCHASES');
-        checked = true;
-        lastCheck = Date.now();
-        update(ids.includes(link.dataset.productId));
-        if (!owned) message(pending() ?
-          (Date.now() < repurchaseConfirmUntil ?
-            'Если эфир уже оплачен, не оплачивайте повторно. Если оплаты не было, нажмите на золотой круг ещё раз, чтобы перейти к оплате.' :
-            'Если эфир уже оплачен, не оплачивайте повторно. Проверяем подтверждение покупки.') : '');
-        return true;
-      } catch (_) {
-        if (current === generation) {
-          checked = false;
-          message('Не удалось проверить доступ. Если эфир уже оплачен, не оплачивайте повторно — обратитесь в поддержку.');
-        }
-        return false;
-      } finally { clearTimeout(timeout); }
-    })();
-    checkInFlight = task;
-    try { return await task; } finally { if (checkInFlight === task) checkInFlight = null; }
+  const purchaseUrl = link.getAttribute('href');
+  const accessUrl = link.dataset.accessUrl;
+  const paymentMemoryKey = 'osokin-pending-episode-v1';
+  const waitingMessage = 'Ожидаем подтверждение оплаты. Доступ проверяется автоматически. Если он не появился, обновите страницу через несколько минут. Не оплачивайте повторно.';
+  let connected = false, verified = false, owned = false, generation = 0;
+  let request = null, repeatClickUntil = 0;
+
+  function show(message = '') {
+   note.textContent = message;
+   note.hidden = !message;
   }
-  function recheckAfterReturn() {
-    if (!embedded || !userId || document.hidden) return;
-    clearRechecks();
-    const current = generation;
-    const delays = pending() ? [200, 3200, 8200, 15200, 30200, 60200, 120200] : [200];
-    for (const ms of delays) {
-      timers.push(setTimeout(() => {
-        if (current === generation && !owned && !document.hidden) void verify(true);
-      }, ms));
+  function pending() {
+   try {
+    const record = JSON.parse(sessionStorage.getItem(paymentMemoryKey) || 'null');
+    return record?.order === order && Number.isFinite(record.at)
+     && Date.now() >= record.at && Date.now() - record.at < 15 * 60 * 1000;
+   } catch (_) { return false; }
+  }
+  function remember() {
+   try { sessionStorage.setItem(paymentMemoryKey, JSON.stringify({order, at: Date.now()})); } catch (_) {}
+  }
+  function forget() {
+   try {
+    const record = JSON.parse(sessionStorage.getItem(paymentMemoryKey) || 'null');
+    if (record?.order === order) sessionStorage.removeItem(paymentMemoryKey);
+   } catch (_) {}
+  }
+  function setPurchased(value) {
+   owned = Boolean(value);
+   checkmark.hidden = !owned;
+   link.classList.toggle('purchased', owned);
+   link.href = owned ? accessUrl : purchaseUrl;
+   link.setAttribute('aria-label', owned ?
+    'Небесная Канцелярия — куплен, открыть эфир' :
+    'Небесная Канцелярия — открыть страницу эфира');
+   if (owned) {
+    repeatClickUntil = 0;
+    forget();
+    show('');
+   } else if (pending()) {
+    show(waitingMessage);
+   } else {
+    show('');
+   }
+  }
+
+  // The primary library already calls the official Notibot bridge.
+  // Reuse its verified response instead of simultaneously polling the SDK twice.
+  function onAccessUpdated(event) {
+   const orders = event.detail?.purchasedOrders;
+   if (!Array.isArray(orders)) return;
+   connected = true;
+   verified = true;
+   setPurchased(orders.includes(order));
+  }
+  function onAccessReset() {
+   generation += 1;
+   connected = true;
+   verified = false;
+   request = null;
+   repeatClickUntil = 0;
+   setPurchased(false);
+  }
+  if (embedded) {
+   document.addEventListener('osokin:entitlements-updated', onAccessUpdated);
+   document.addEventListener('osokin:entitlements-reset', onAccessReset);
+  }
+
+  // Fallback only if an early click occurs before the main library's first response.
+  async function verifyOnce() {
+   if (!connected || typeof sdk?.getPurchasedProducts !== 'function') return false;
+   if (request) return request;
+   const currentGeneration = generation;
+   const task = (async () => {
+    let timeout;
+    try {
+     const ids = await Promise.race([
+      sdk.getPurchasedProducts({forceRefresh: true}),
+      new Promise((_, reject) => { timeout = setTimeout(() => reject(Error('ACCESS_TIMEOUT')), 9000); })
+     ]);
+     if (currentGeneration !== generation) return false;
+     if (!Array.isArray(ids) || ids.some(id => typeof id !== 'string')) throw Error('INVALID_PURCHASES');
+     verified = true;
+     setPurchased(ids.includes(link.dataset.productId));
+     return true;
+    } catch (_) {
+     if (currentGeneration === generation) {
+      verified = false;
+      show('Не удалось проверить доступ. Если уже оплатили эфир, не оплачивайте повторно — обратитесь в поддержку.');
+     }
+     return false;
+    } finally {
+     clearTimeout(timeout);
     }
+   })();
+   request = task;
+   try { return await task; } finally { if (request === task) request = null; }
   }
-  if (embedded && sdk && typeof sdk.onUpdate === 'function') {
-    sdk.onUpdate(user => {
-      const nextId = user?.id != null ? String(user.id) : null;
-      if (!nextId) return;
-      if (userId !== nextId) {
-        if (userId !== null) forget();
-        generation += 1;
-        userId = nextId;
-        checked = false;
-        lastCheck = 0;
-        checkInFlight = null;
-        repurchaseConfirmUntil = 0;
-        update(false);
-      }
-      recheckAfterReturn();
-    });
-    window.addEventListener('focus', recheckAfterReturn);
-    window.addEventListener('pageshow', event => { if (event.persisted) recheckAfterReturn(); });
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) clearRechecks();
-      else recheckAfterReturn();
-    });
-  }
+
   link.addEventListener('click', async event => {
-    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || !embedded) return;
-    event.preventDefault();
-    if (!userId || typeof sdk?.openLink !== 'function') {
-      message('Подключаем Notibot. Откройте эфир внутри приложения и попробуйте ещё раз.');
-      return;
+   if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || !embedded) return;
+   event.preventDefault();
+   if (!connected || typeof sdk?.openLink !== 'function') {
+    show('Проверяем доступ. Попробуйте нажать ещё раз через несколько секунд.');
+    return;
+   }
+   if (!verified) {
+    show('Проверяем доступ…');
+    if (!await verifyOnce()) return;
+   }
+   if (!owned && pending()) {
+    if (Date.now() >= repeatClickUntil) {
+     repeatClickUntil = Date.now() + 30000;
+     show(waitingMessage + ' Если оплаты не было, нажмите ещё раз для перехода.');
+     return;
     }
-    if (!checked || Date.now() - lastCheck > 5000) {
-      message('Проверяем доступ…');
-      if (!await verify(true)) return;
+    repeatClickUntil = 0;
+   }
+   try {
+    if (!owned) {
+     remember();
+     show(waitingMessage);
     }
-    if (!owned && pending()) {
-      if (Date.now() >= repurchaseConfirmUntil) {
-        // No browser modal: a deliberate second tap confirms an unfinished purchase.
-        repurchaseConfirmUntil = Date.now() + 30000;
-        message('Если эфир уже оплачен, не оплачивайте повторно — доступ проверяется автоматически. Если оплаты не было, нажмите на золотой круг ещё раз, чтобы перейти к оплате.');
-        recheckAfterReturn();
-        return;
-      }
-      repurchaseConfirmUntil = 0;
-    }
-    try {
-      if (!owned) remember();
-      sdk.openLink('https://t.me/post#' +
-        encodeURIComponent(owned ? link.dataset.accessPageId : link.dataset.purchasePageId));
-      if (!owned) recheckAfterReturn();
-    } catch (_) { message('Не удалось открыть эфир. Попробуйте ещё раз.'); }
+    sdk.openLink('https://t.me/post#' +
+     encodeURIComponent(owned ? link.dataset.accessPageId : link.dataset.purchasePageId));
+   } catch (_) {
+    show('Не удалось открыть эфир. Попробуйте ещё раз.');
+   }
   });
-  }
-  feature.addEventListener('osokin-feature-release', initializeFeaturedLink);
-  initializeFeaturedLink();
+ }
+ feature.addEventListener('osokin-feature-release', initialize);
+ initialize();
 })();
