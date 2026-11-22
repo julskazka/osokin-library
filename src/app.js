@@ -74,7 +74,7 @@ function readPendingPayment(){
  }catch(error){/* iOS private mode may deny storage */}
  return null;
 }
-let pendingOrder=readPendingPayment(),connectedIdentity=null;
+let pendingOrder=readPendingPayment(),connectedIdentity=null,repurchaseOrder=null,repurchaseConfirmUntil=0;
 function rememberPendingPayment(order){
  pendingOrder=order;
  try{sessionStorage.setItem(paymentMemoryKey,JSON.stringify({order,at:Date.now()}));}catch(error){}
@@ -82,6 +82,7 @@ function rememberPendingPayment(order){
 }
 function forgetPendingPayment(){
  pendingOrder=null;
+ repurchaseOrder=null;repurchaseConfirmUntil=0;
  try{sessionStorage.removeItem(paymentMemoryKey);}catch(error){}
  updateStatus();
 }
@@ -117,7 +118,9 @@ function updateStatus(){
  if(embedded&&(!sdk||accessState==='error')){
   showMessage('Не удалось обновить доступ. Если вы уже оплатили эфир, не оплачивайте повторно — обратитесь в поддержку.');
  }else if(embedded&&pendingOrder!==null&&!purchased.has(pendingOrder)){
-  showMessage('Проверяем доступ после перехода к оплате. Если вы уже оплатили эфир, не оплачивайте его повторно. Доступ обновится автоматически после подтверждения Notibot.');
+  showMessage(repurchaseOrder===pendingOrder&&Date.now()<repurchaseConfirmUntil
+   ? 'Если вы уже оплатили эфир, не оплачивайте повторно. Проверяем доступ. Если оплаты не было, нажмите на этот кристалл ещё раз, чтобы перейти к оплате.'
+   : 'Проверяем доступ после перехода к оплате. Если вы уже оплатили эфир, не оплачивайте его повторно. Доступ обновится автоматически после подтверждения Notibot.');
  }else showMessage('');
 }
 function syncEnvironment(user){
@@ -239,8 +242,13 @@ $('#om-screen').addEventListener('click',event=>{
  const episode=items.find(e=>e.order===Number(link.dataset.order));
  if(embedded&&!episode.is_free&&accessState!=='ready'){updateStatus();return;}
  if(embedded&&!episode.is_free&&!purchased.has(episode.order)&&pendingOrder===episode.order){
-  const proceed=window.confirm('Если вы уже оплатили этот эфир, НЕ оплачивайте его повторно: библиотека проверяет доступ автоматически. Продолжить к оплате только в том случае, если платежа не было?');
-  if(!proceed){updateStatus();startPurchaseRecheck(0);return;}
+  if(repurchaseOrder!==episode.order||Date.now()>=repurchaseConfirmUntil){
+   // Avoid a browser-native dialog and an accidental duplicate payment.
+   repurchaseOrder=episode.order;
+   repurchaseConfirmUntil=Date.now()+30000;
+   updateStatus();startPurchaseRecheck(0);return;
+  }
+  repurchaseOrder=null;repurchaseConfirmUntil=0;
  }
  try{
   if(embedded&&sdk){
