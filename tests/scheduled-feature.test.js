@@ -17,7 +17,7 @@ test('main shows feature only after the agreed Moscow date and keeps URL unchang
   assert.ok(main.includes("feature.hidden = !ready;"));
   assert.ok(main.includes("feature.dispatchEvent(new Event('osokin-feature-release'))"));
   assert.ok(main.includes("window.addEventListener('focus', sync)"));
-  assert.ok(main.includes('src="src/featured-preview.js"'));
+  assert.ok(main.includes('src="src/featured-preview.js?v=20261122-checkmark"'));
 });
 test('main and duplicate share the same feature and genuine Notibot product ID', () => {
   assert.ok(featured);
@@ -26,6 +26,9 @@ test('main and duplicate share the same feature and genuine Notibot product ID',
   assert.equal(featured.purchase_page_id, '38iscsQh91iXT76FEtcLhS');
   assert.equal(featured.access_page_id, '3xBocyoJp7lCRrHxrz0EbX');
   for (const source of [main, duplicate]) {
+    assert.ok(source.includes('class="osokin-featured-owned-mark" aria-hidden="true" hidden>✓</span>'));
+    assert.ok(source.includes('src="src/app.js?v=20261122-purchase-ui"'));
+    assert.ok(source.includes('src="src/featured-preview.js?v=20261122-checkmark"'));
     assert.ok(source.includes('data-product-id="' + featured.product_id + '"'));
     assert.ok(source.includes('data-purchase-page-id="' + featured.purchase_page_id + '"'));
     assert.ok(source.includes('data-access-page-id="' + featured.access_page_id + '"'));
@@ -41,4 +44,20 @@ test('feature script defers requests while hidden and only gives paid access fro
   assert.ok(controller.includes('ids.includes(link.dataset.productId)'));
   assert.ok(controller.includes('sdk.getPurchasedProducts'));
   assert.ok(!controller.includes('owned = true;'));
+  assert.ok(!controller.includes('window.confirm('));
+  assert.ok(controller.includes("checkmark.hidden = !owned;"));
+  assert.ok(controller.includes("document.addEventListener('osokin:entitlements-updated', onAccessUpdated)"));
+  assert.ok(controller.includes("document.addEventListener('osokin:entitlements-reset', onAccessReset)"));
+  assert.ok(controller.includes("ids.includes(link.dataset.productId)"));
+  assert.ok(controller.includes('Ожидаем подтверждение оплаты.'));
+});
+
+
+test('main library sends one verified purchase result to the featured crystal', () => {
+ const app = readFileSync(new URL('../src/app.js', import.meta.url), 'utf8');
+ assert.ok(app.includes("new CustomEvent('osokin:entitlements-updated'"));
+ assert.ok(app.includes("new Event('osokin:entitlements-reset')"));
+ assert.ok(!app.includes('window.confirm('));
+ assert.ok(!controller.includes('window.confirm('));
+ assert.ok(app.includes('Ожидаем подтверждение оплаты.'));
 });
