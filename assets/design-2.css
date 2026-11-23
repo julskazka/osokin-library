@@ -265,3 +265,7 @@ html > body {
   min-width:0;
   /* Preserve the existing 560px / 620px desktop maximum widths. */
 }
+
+/* Telegram and MAX support actions: stacked in one column on all screen widths. */
+#osokin-mvp .support-action { flex-direction:column; align-items:center; gap:12px; }
+#osokin-mvp .support-action .support-button { width:100%; min-width:0; max-width:360px; text-align:center; }
