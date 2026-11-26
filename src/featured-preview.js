@@ -20,7 +20,7 @@
   const purchaseUrl = link.getAttribute('href');
   const accessUrl = link.dataset.accessUrl;
   const paymentMemoryKey = 'osokin-pending-episode-v1';
-  const waitingMessage = 'Ожидаем подтверждение оплаты. Доступ проверяется автоматически. Если он не появился, обновите страницу через несколько минут. Не оплачивайте повторно.';
+  const repeatWarning = 'Если оплата прошла, не оплачивайте повторно. Если оплаты не было, нажмите на золотой круг ещё раз.';
   let connected = false, verified = false, owned = false, generation = 0;
   let request = null, repeatClickUntil = 0;
 
@@ -56,9 +56,8 @@
     repeatClickUntil = 0;
     forget();
     show('');
-   } else if (pending()) {
-    show(waitingMessage);
    } else {
+    // A saved checkout attempt is not proof that a payment is awaiting confirmation.
     show('');
    }
   }
@@ -134,16 +133,13 @@
    if (!owned && pending()) {
     if (Date.now() >= repeatClickUntil) {
      repeatClickUntil = Date.now() + 30000;
-     show(waitingMessage + ' Если оплаты не было, нажмите ещё раз для перехода.');
+     show(repeatWarning);
      return;
     }
     repeatClickUntil = 0;
    }
    try {
-    if (!owned) {
-     remember();
-     show(waitingMessage);
-    }
+    if (!owned) remember();
     sdk.openLink('https://t.me/post#' +
      encodeURIComponent(owned ? link.dataset.accessPageId : link.dataset.purchasePageId));
    } catch (_) {
