@@ -117,10 +117,6 @@ function showMessage(message=''){
 function updateStatus(){
  if(embedded&&(!sdk||accessState==='error')){
   showMessage('Не удалось обновить доступ. Если вы уже оплатили эфир, не оплачивайте повторно — обратитесь в поддержку.');
- }else if(embedded&&pendingOrder!==null&&!purchased.has(pendingOrder)){
-  showMessage(repurchaseOrder===pendingOrder&&Date.now()<repurchaseConfirmUntil
-   ? 'Ожидаем подтверждение оплаты. Доступ проверяется автоматически. Если оплаты не было, нажмите на этот кристалл ещё раз. Не оплачивайте повторно, если платёж уже прошёл.'
-   : 'Ожидаем подтверждение оплаты. Доступ проверяется автоматически. Если он не появился, обновите страницу через несколько минут. Не оплачивайте повторно.');
  }else showMessage('');
 }
 function syncEnvironment(user){
@@ -256,7 +252,9 @@ $('#om-screen').addEventListener('click',event=>{
    // Avoid a browser-native dialog and an accidental duplicate payment.
    repurchaseOrder=episode.order;
    repurchaseConfirmUntil=Date.now()+30000;
-   updateStatus();startPurchaseRecheck(0);return;
+   // Only on a deliberate repeated checkout attempt, not on page load.
+   showMessage('Если оплата уже прошла, не оплачивайте повторно. Если оплаты не было, нажмите на кристалл ещё раз.');
+   startPurchaseRecheck(0);return;
   }
   repurchaseOrder=null;repurchaseConfirmUntil=0;
  }
